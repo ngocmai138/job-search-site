@@ -9,4 +9,8 @@ public class JobSearchController {
 	public String goHome() {
 		return "home";
 	}
+	@GetMapping("/access-denied")
+	public String deniedPage() {
+		return "access-denied";
+	}
 }
