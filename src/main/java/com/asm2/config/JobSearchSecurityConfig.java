@@ -30,7 +30,7 @@ public class JobSearchSecurityConfig {
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
 		return http
 					.authorizeRequests(configurer ->
-										configurer.antMatchers("/").hasRole("User"))
+										configurer.antMatchers("/").hasRole("USER"))
 					.formLogin(configurer ->
 								configurer.loginProcessingUrl("authenticateTheUser")
 											.permitAll())
