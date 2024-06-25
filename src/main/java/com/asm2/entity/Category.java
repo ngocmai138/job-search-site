@@ -1,4 +1,4 @@
-package com.asm1.entiry;
+package com.asm2.entity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +33,7 @@ public class Category {
 	@JoinColumn(name = "category_id")
 	private List<Recruitment> recruitments;
 	
+	public Category() {}
 	
 	public int getId() {
 		return id;

@@ -1,4 +1,4 @@
-package com.asm1.entiry;
+package com.asm2.entity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +31,9 @@ public class Role {
 				joinColumns = @JoinColumn(name="role_id"),
 				inverseJoinColumns = @JoinColumn(name="user_id"))
 	private List<User> users;
+	
+	public Role() {}
+	
 	public int getId() {
 		return id;
 	}

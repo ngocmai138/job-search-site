@@ -1,4 +1,4 @@
-package com.asm1.entiry;
+package com.asm2.entity;
 
 import java.sql.Date;
 
@@ -35,6 +35,9 @@ public class ApplyPost {
 							CascadeType.PERSIST, CascadeType.REFRESH})
 	@JoinColumn(name="user_id")
 	private User user;
+	
+	public ApplyPost() {}
+	
 	public int getId() {
 		return id;
 	}

@@ -1,8 +1,8 @@
-package com.asm1.dao;
+package com.asm2.dao;
 
 import java.util.List;
 
-import com.asm1.entiry.Company;
+import com.asm2.entity.Company;
 
 public interface JobDAO {
 	public List<Company> getCompanies();

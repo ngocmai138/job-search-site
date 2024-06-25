@@ -7,8 +7,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import com.asm1.entiry.Company;
-import com.asm1.service.JobService;
+import com.asm2.entity.Company;
+import com.asm2.service.JobService;
 
 @Controller
 public class JobSearchController {

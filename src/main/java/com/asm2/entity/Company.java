@@ -1,4 +1,4 @@
-package com.asm1.entiry;
+package com.asm2.entity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -148,7 +148,9 @@ public class Company {
 		}
 		usersFollow.add(user);
 	}
-	
+	public Company() {
+		
+	}
 	public Company(String address, String description, String email, String logo, String nameCompany,
 			String phoneNumber, int status, boolean isActive, User user) {
 		super();

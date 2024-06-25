@@ -1,4 +1,4 @@
-package com.asm1.entiry;
+package com.asm2.entity;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -24,6 +24,9 @@ public class Cv {
 	@JoinColumn(name="user_id")
 	@OneToOne(cascade = CascadeType.ALL)
 	private User user;
+	
+	public Cv() {}
+	
 	public int getId() {
 		return id;
 	}

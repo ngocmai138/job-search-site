@@ -1,8 +1,8 @@
-package com.asm1.service;
+package com.asm2.service;
 
 import java.util.List;
 
-import com.asm1.entiry.Company;
+import com.asm2.entity.Company;
 
 public interface JobService {
 	public List<Company> getCompanies();

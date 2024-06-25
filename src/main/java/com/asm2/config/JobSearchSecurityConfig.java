@@ -12,6 +12,7 @@ import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
+@EnableWebSecurity
 public class JobSearchSecurityConfig {
 	private DataSource securityDataSource;
 
@@ -39,14 +40,15 @@ public class JobSearchSecurityConfig {
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
 		return http
 					.authorizeRequests(configurer ->
-										configurer.antMatchers("/").hasRole("user"))
-					.formLogin(configurer ->
-								configurer.loginProcessingUrl("/authenticateTheUser")
-											.permitAll())
-					.logout(configurer ->
-								configurer.permitAll())
-					.exceptionHandling(configurer ->
-										configurer.accessDeniedPage("/access-denied"))
+										configurer.anyRequest().permitAll())
+									//	configurer.antMatchers("/").hasRole("user"))
+//					.formLogin(configurer ->
+//								configurer.loginProcessingUrl("/authenticateTheUser")
+//											.permitAll())
+//					.logout(configurer ->
+//								configurer.permitAll())
+//					.exceptionHandling(configurer ->
+//										configurer.accessDeniedPage("/access-denied"))
 					.build();
 	} 
 	

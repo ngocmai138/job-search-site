@@ -1,4 +1,4 @@
-package com.asm1.entiry;
+package com.asm2.entity;
 
 import java.sql.Date;
 import java.util.ArrayList;
@@ -69,6 +69,9 @@ public class Recruitment {
 							CascadeType.PERSIST, CascadeType.REFRESH})
 	@JoinColumn(name="recruitment_id")
 	private List<ApplyPost> applyPosts;
+	
+	public Recruitment() {}
+	
 	public int getId() {
 		return id;
 	}

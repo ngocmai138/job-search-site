@@ -1,4 +1,4 @@
-package com.asm1.entiry;
+package com.asm2.entity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,10 +78,10 @@ public class User {
 							CascadeType.PERSIST, CascadeType.REFRESH})
 	@JoinColumn(name="user_id")
 	private List<ApplyPost> applyPosts;
+	
 	public User() {
 		this.status=1;
 	}
-	
 	
 	public int getId() {
 		return id;
