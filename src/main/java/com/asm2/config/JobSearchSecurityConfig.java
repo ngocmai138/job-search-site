@@ -12,7 +12,6 @@ import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
-@EnableWebSecurity
 public class JobSearchSecurityConfig {
 	private DataSource securityDataSource;
 
@@ -24,15 +23,25 @@ public class JobSearchSecurityConfig {
 	
 	@Bean
 	public UserDetailsManager userDetailsService() {
-		return new JdbcUserDetailsManager(securityDataSource);
+		JdbcUserDetailsManager jdbcUserDetailsManager = new  JdbcUserDetailsManager(securityDataSource);
+		jdbcUserDetailsManager.setUsersByUsernameQuery(""
+				+ "select user_name, password, isActive as enabled from user where user_name=?");
+		jdbcUserDetailsManager.setAuthoritiesByUsernameQuery(""
+				+ "select u.user_name, r.role_name as authority "
+				+ "from authorities a "
+				+ "join user u on a.user_id = u.id "
+				+ "join role r on a.role_id = r.id "
+				+ "where u.user_name=?");
+		return jdbcUserDetailsManager;
 	}
 	
+	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
 		return http
 					.authorizeRequests(configurer ->
-										configurer.antMatchers("/").hasRole("USER"))
+										configurer.antMatchers("/").hasRole("user"))
 					.formLogin(configurer ->
-								configurer.loginProcessingUrl("authenticateTheUser")
+								configurer.loginProcessingUrl("/authenticateTheUser")
 											.permitAll())
 					.logout(configurer ->
 								configurer.permitAll())
