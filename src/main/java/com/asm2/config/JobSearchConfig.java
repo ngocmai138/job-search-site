@@ -19,6 +19,8 @@ import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 
@@ -30,7 +32,7 @@ import com.mchange.v2.c3p0.ComboPooledDataSource;
 @ComponentScan(basePackages = "com.asm2")
 @EnableJpaRepositories(basePackages = "com.asm2.dao")
 @PropertySource("classpath:persistence-mysql.properties")
-public class JobSearchConfig {
+public class JobSearchConfig implements WebMvcConfigurer{
 	@Autowired
 	private Environment env;
 	@Bean
@@ -86,4 +88,11 @@ public class JobSearchConfig {
 		txManager.setSessionFactory(sessionFactory);
 		return txManager;
 	}
+	@Override
+	public void addResourceHandlers(ResourceHandlerRegistry registry) {
+		registry.addResourceHandler("/resources/**").addResourceLocations("/resources/");
+        registry.addResourceHandler("/assets/**").addResourceLocations("/assets/");
+	}
+	
+	
 }

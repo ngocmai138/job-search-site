@@ -36,7 +36,7 @@ public class Recruitment {
 	@Column(name="rank")
 	private String rank;
 	@Column(name="salary")
-	private double salary;
+	private String salary;
 	@Column(name="status")
 	private int status;
 	@Column(name="title")
@@ -108,10 +108,10 @@ public class Recruitment {
 	public void setRank(String rank) {
 		this.rank = rank;
 	}
-	public double getSalary() {
+	public String getSalary() {
 		return salary;
 	}
-	public void setSalary(double salary) {
+	public void setSalary(String salary) {
 		this.salary = salary;
 	}
 	public int getStatus() {
@@ -188,7 +188,7 @@ public class Recruitment {
 		}
 		applyPosts.add(applyPost);
 	}
-	public Recruitment(String address, String description, String experience, int quantity, String rank, double salary,
+	public Recruitment(String address, String description, String experience, int quantity, String rank, String salary,
 			int status, String title, String type, int view, Category category, Company company, Date deadline,
 			boolean isActive) {
 		super();

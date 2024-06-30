@@ -15,6 +15,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 
 @Entity
@@ -39,14 +40,17 @@ public class User {
 	@Column(name="phone_number")
 	private String phoneNumber;
 	@Column(name="status")
-	private int status;
+	private Integer status;
 	@Column(name="isActive")
 	private boolean isActive;
-	@JoinColumn(name="cv_id")
-	@OneToOne(cascade = CascadeType.ALL)
-	private Cv sv;
 	
-	@ManyToMany(fetch = FetchType.LAZY,
+	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+	private Company company;
+
+	@OneToOne(mappedBy = "user" ,cascade = CascadeType.ALL)
+	private Cv cv;
+	
+	@ManyToMany(fetch = FetchType.EAGER,
 				cascade = {CascadeType.DETACH, CascadeType.MERGE,
 							CascadeType.PERSIST, CascadeType.REFRESH})
 	@JoinTable(name="authorities",
@@ -81,6 +85,7 @@ public class User {
 	
 	public User() {
 		this.status=1;
+		this.isActive=true;
 	}
 	
 	public int getId() {
@@ -144,10 +149,10 @@ public class User {
 		this.isActive = isActive;
 	}
 	public Cv getSv() {
-		return sv;
+		return cv;
 	}
 	public void setSv(Cv sv) {
-		this.sv = sv;
+		this.cv = sv;
 	}
 	public List<Role> getRoles() {
 		return roles;
@@ -207,6 +212,26 @@ public class User {
 	}
 
 
+	public Company getCompany() {
+		return company;
+	}
+
+	public void setCompany(Company company) {
+		this.company = company;
+	}
+
+	public void setStatus(Integer status) {
+		this.status = status;
+	}
+
+	public Cv getCv() {
+		return cv;
+	}
+
+	public void setCv(Cv cv) {
+		this.cv = cv;
+	}
+
 	public void addRecruitmentSave(Recruitment recruitment) {
 		if(recruitmentsSave == null) {
 			recruitmentsSave = new ArrayList<Recruitment>();
@@ -246,7 +271,7 @@ public class User {
 		this.phoneNumber = phoneNumber;
 		this.status = status;
 		this.isActive = isActive;
-		this.sv = sv;
+		this.cv = sv;
 		this.roles = roles;
 	}
 
@@ -255,7 +280,7 @@ public class User {
 	public String toString() {
 		return "User [id=" + id + ", address=" + address + ", description=" + description + ", email=" + email
 				+ ", userName=" + userName + ", image=" + image + ", password=" + password + ", phoneNumber="
-				+ phoneNumber + ", status=" + status + ", isActive=" + isActive + ", sv=" + sv + ", roles=" + roles
+				+ phoneNumber + ", status=" + status + ", isActive=" + isActive + ", sv=" + cv + ", roles=" + roles
 				+ "]";
 	}
 

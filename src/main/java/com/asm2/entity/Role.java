@@ -59,6 +59,18 @@ public class Role {
 		}
 		users.add(user);
 	}
+	
+	public String getDisplayRoleName() {
+		switch (this.roleName) {
+		case "ROLE_recruiter":
+			return "Nhà tuyển dụng";
+		case "ROLE_candidate":
+			return "Ứng viên";
+		default:
+			return this.roleName;
+		}
+	}
+	
 	public Role(String roleName, List<User> users) {
 		super();
 		this.roleName = roleName;

@@ -2,6 +2,8 @@ package com.asm2.config;
 
 import javax.sql.DataSource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,11 +17,14 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class JobSearchSecurityConfig {
 	private DataSource securityDataSource;
+	private JobAuthenticationSuccessHandler authenticationSuccessHandler;
+	private Logger logger = LoggerFactory.getLogger(JobSearchSecurityConfig.class);
 
 	@Autowired
-	public JobSearchSecurityConfig(DataSource securityDataSource) {
+	public JobSearchSecurityConfig(DataSource securityDataSource, JobAuthenticationSuccessHandler authenticationSuccessHandler) {
 		super();
 		this.securityDataSource = securityDataSource;
+		this.authenticationSuccessHandler = authenticationSuccessHandler;
 	}
 	
 	@Bean
@@ -40,15 +45,20 @@ public class JobSearchSecurityConfig {
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
 		return http
 					.authorizeRequests(configurer ->
-										configurer.anyRequest().permitAll())
-									//	configurer.antMatchers("/").hasRole("user"))
-//					.formLogin(configurer ->
-//								configurer.loginProcessingUrl("/authenticateTheUser")
-//											.permitAll())
-//					.logout(configurer ->
-//								configurer.permitAll())
-//					.exceptionHandling(configurer ->
-//										configurer.accessDeniedPage("/access-denied"))
+										configurer.antMatchers("/admin").hasRole("admin")
+													.antMatchers("/**").permitAll())
+					.formLogin(configurer ->
+										configurer.loginPage("/login")
+													.loginProcessingUrl("/authenticateTheUser")
+													.successHandler(authenticationSuccessHandler)
+													.failureUrl("/showLoginPage?error=true")
+													.permitAll())
+					.logout(configurer ->
+								configurer.logoutUrl("/logout")
+											.logoutSuccessUrl("/?logout")
+											.permitAll())
+					.exceptionHandling(configurer ->
+										configurer.accessDeniedPage("/access-denied"))
 					.build();
 	} 
 	

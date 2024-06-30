@@ -7,14 +7,13 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
+import javax.persistence.MapsId;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -22,7 +21,6 @@ import javax.persistence.Table;
 public class Company {
 	@Id
 	@Column(name = "id")
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 	@Column(name = "address")
 	private String address;
@@ -41,8 +39,7 @@ public class Company {
 	@Column(name="isActive")
 	private boolean isActive;
 	@JoinColumn(name="user_id")
-	@ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE,
-							CascadeType.PERSIST, CascadeType.REFRESH})
+	@OneToOne()
 	private User user;
 	@OneToMany(fetch = FetchType.LAZY,
 				cascade = {CascadeType.DETACH, CascadeType.MERGE,
@@ -56,6 +53,9 @@ public class Company {
 				joinColumns = @JoinColumn(name="company_id"),
 				inverseJoinColumns = @JoinColumn(name="user_id"))
 	private List<User> usersFollow;
+	
+	@Column(name="number_of_recruitments")
+	private int numberOfRecruitments;
 	
 	public int getId() {
 		return id;
@@ -135,6 +135,18 @@ public class Company {
 		this.usersFollow = users;
 	}
 	
+	public List<User> getUsersFollow() {
+		return usersFollow;
+	}
+	public void setUsersFollow(List<User> usersFollow) {
+		this.usersFollow = usersFollow;
+	}
+	public int getNumberOfRecruitments() {
+		return numberOfRecruitments;
+	}
+	public void setNumberOfRecruitments(int numberOfRecruitments) {
+		this.numberOfRecruitments = numberOfRecruitments;
+	}
 	public void addRecuitment(Recruitment recruitment) {
 		if(recruitments == null) {
 			recruitments = new ArrayList<Recruitment>();
@@ -148,8 +160,8 @@ public class Company {
 		}
 		usersFollow.add(user);
 	}
+	
 	public Company() {
-		
 	}
 	public Company(String address, String description, String email, String logo, String nameCompany,
 			String phoneNumber, int status, boolean isActive, User user) {
