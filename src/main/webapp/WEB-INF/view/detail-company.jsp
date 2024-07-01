@@ -53,32 +53,86 @@
   <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 </head>
 <body>
-
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class="container-fluid px-md-4	">
-          <a class="navbar-brand" href="${pageContext.request.contextPath}/">Work CV</a>
-      
-          <div class="collapse navbar-collapse" id="ftco-nav">
-            <ul class="navbar-nav ml-auto">
-              <li class="nav-item active"><a href="${pageContext.request.contextPath }/" class="nav-link">Trang chủ</a></li>
-              <li class="'nav-item"><a href="/" class="nav-link">Công việc</a></li>
-              <li class="nav-item cta mr-md-1" style="position: relative;"><a
-							class="nav-link dropdown-toggle" href="#" id="navbarDropdown"
-							role="button" data-toggle="dropdown" aria-haspopup="true"
-							aria-expanded="false"> <s:authentication
+<nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light"
+		id="ftco-navbar">
+		<div class="container-fluid px-md-4">
+			<a class="navbar-brand" href="${pageContext.request.contextPath}/">Work
+				CV</a>
+			<div class="collapse navbar-collapse" id="ftco-nav">
+				<ul class="navbar-nav ml-auto">
+					<li class="nav-item active"><a
+						href="${pageContext.request.contextPath}/" class="nav-link">Trang
+							chủ</a></li>
+					<li class="nav-item"><a href="/" class="nav-link">Công
+							việc</a></li>
+					
+					<s:authorize access="hasRole('candidate')">
+					<li class="nav-item" style="position: relative;"><a class="nav-link" href="#"> Hồ Sơ
+						</a>
+							<ul class="dropdown" >
+								<li><a href="/save-job/get-list">Công việc đã lưu</a></li>
+								<li><a href="${pageContext.request.contextPath}/user/showListPost">Danh sách bài đăng</a></li>
+								<li><a href="/user/get-list-apply">Công việc đã ứng
+										tuyển</a></li>
+								<li><a href="/user/get-list-company">Công ty đã theo
+										dõi</a></li>
+								<li><a href="#"
+									onclick="document.getElementById('logoutForm').submit();">Đăng
+										xuất</a> <f:form id="logoutForm"
+										action="${pageContext.request.contextPath }/logout"
+										method="post" style="display:none;">
+										<input type="hidden" name="_csrf" value="${_csrf.token }" />
+									</f:form></li>
+							</ul></li>
+					</s:authorize>
+					<s:authorize access="hasRole('recruiter')">
+					<li class="nav-item"><a href="/" class="nav-link">Ứng cử
+							viên</a></li>
+						<li class="nav-item">
+							<a class="nav-link" href="#"> <s:authentication
 									property="principal.username" />
 						</a>
-							<div class="dropdown-menu" aria-labelledby="navbarDropdown">
-								<a class="dropdown-item" href="#"
-									onclick="document.getElementById('detailCompany').submit();">Hồ Sơ</a> 
-								<f:form id="detailCompany" action="${pageContext.request.contextPath }/showDetailCompany"
-										style="display:none;" method="get">
-									<input type="hidden" value="${pageContext.request.userPrincipal.name }" name="username">
+						<ul class="dropdown">
+							<li>
+								<a href="#"
+									onclick="document.getElementById('detailCompany').submit();">Hồ
+									Sơ</a>
+								<f:form id="detailCompany"
+									action="${pageContext.request.contextPath }/showProfile"
+									style="display:none;" method="get">
+									<input type="hidden"
+										value="${pageContext.request.userPrincipal.name }"
+										name="username">
 								</f:form>
-								<a
-									class="dropdown-item" href="/user/list-post">Danh sách bài
-									đăng</a> 
-								<a class="dropdown-item" href="#"
+							</li>
+							<li>
+								<a href="#" onclick="document.getElementById('showListPost').submit();">Danh sách
+									bài đăng</a> 
+									<f:form id="showListPost" action="${pageContext.request.contextPath}/user/showListPost"
+										style="display:none;" method="get">
+										<input type="hidden" value="${pageContext.request.userPrincipal.name }" name="username">
+									</f:form>
+							</li>
+								<li><a href="#"
+									onclick="document.getElementById('logoutForm').submit();">Đăng
+										xuất</a> <f:form id="logoutForm"
+										action="${pageContext.request.contextPath }/logout"
+										method="post" style="display:none;">
+										<input type="hidden" name="_csrf" value="${_csrf.token }" />
+									</f:form></li>
+							</ul>
+						</li>
+						<li class="nav-item "><a href="/" class="nav-link">Đăng
+								tuyển</a></li>
+					</s:authorize>
+					<c:if test="${principal == null }">
+						<li class="nav-item cta cta-colored"><a
+							href="${pageContext.request.contextPath }/showLoginPage"
+							class="nav-link"> Đăng nhập</a></li>
+					</c:if>
+					<c:if test="${principal != null }">
+						<li class="nav-item">
+							<a class="nav-link" href="#"
 									onclick="document.getElementById('logoutForm').submit();">Đăng
 									xuất</a>
 								<f:form id="logoutForm"
@@ -86,12 +140,13 @@
 									method="post" style="display:none;">
 									<input type="hidden" name="_csrf" value="${_csrf.token }" />
 								</f:form>
-							</div></li>
-                <li class="nav-item cta mr-md-1"><a href="/recruitment/post" class="nav-link">Đăng tuyển</a></li>
-            </ul>
-          </div>
-        </div>
-      </nav>
+						</li>
+					</c:if>
+				</ul>
+			</div>
+		</div>
+	</nav>
+
 <!-- END nav -->
 
 

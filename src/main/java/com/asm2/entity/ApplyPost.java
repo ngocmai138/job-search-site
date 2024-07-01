@@ -27,8 +27,6 @@ public class ApplyPost {
 	private String text;
 	@Column(name="name_cv")
 	private String nameCv;
-	@ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE,
-							CascadeType.PERSIST, CascadeType.REFRESH})
 	@JoinColumn(name="recruitment_id")
 	private Recruitment recruitment;
 	@ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE,

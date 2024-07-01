@@ -54,18 +54,11 @@
 </head>
 <body>
 <body>
-<nav
-		class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light"
+<nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light"
 		id="ftco-navbar">
-		<div class="container-fluid px-md-4	">
+		<div class="container-fluid px-md-4">
 			<a class="navbar-brand" href="${pageContext.request.contextPath}/">Work
 				CV</a>
-			<button class="navbar-toggler" type="button" data-toggle="collapse"
-				data-target="#ftco-nav" aria-controls="ftco-nav"
-				aria-expanded="false" aria-label="Toggle navigation">
-				<span class="oi oi-menu"></span> Menu
-			</button>
-
 			<div class="collapse navbar-collapse" id="ftco-nav">
 				<ul class="navbar-nav ml-auto">
 					<li class="nav-item active"><a
@@ -73,48 +66,83 @@
 							chủ</a></li>
 					<li class="nav-item"><a href="/" class="nav-link">Công
 							việc</a></li>
+					
+					<s:authorize access="hasRole('candidate')">
+					<li class="nav-item" style="position: relative;"><a class="nav-link" href="#"> Hồ Sơ
+						</a>
+							<ul class="dropdown" >
+								<li><a href="/save-job/get-list">Công việc đã lưu</a></li>
+								<li><a href="${pageContext.request.contextPath}/user/showListPost">Danh sách bài đăng</a></li>
+								<li><a href="/user/get-list-apply">Công việc đã ứng
+										tuyển</a></li>
+								<li><a href="/user/get-list-company">Công ty đã theo
+										dõi</a></li>
+								<li><a href="#"
+									onclick="document.getElementById('logoutForm').submit();">Đăng
+										xuất</a> <f:form id="logoutForm"
+										action="${pageContext.request.contextPath }/logout"
+										method="post" style="display:none;">
+										<input type="hidden" name="_csrf" value="${_csrf.token }" />
+									</f:form></li>
+							</ul></li>
+					</s:authorize>
+					<s:authorize access="hasRole('recruiter')">
 					<li class="nav-item"><a href="/" class="nav-link">Ứng cử
 							viên</a></li>
-					<li class="nav-item"><a href="#" class="nav-link"
-						onclick="document.getElementById('showProfile').submit();">
-							${pageContext.request.userPrincipal.name } </a> <f:form
-							id="showProfile"
-							action="${pageContext.request.contextPath}/showProfile">
-							<input type="hidden"
-								value="${pageContext.request.userPrincipal.name }">
-						</f:form>
-
+						<li class="nav-item">
+							<a class="nav-link" href="#"> <s:authentication
+									property="principal.username" />
+						</a>
 						<ul class="dropdown">
-							<li><a href="/">Hồ Sơ</a></li>
-							<!--            <li><a href="service-single.html">Đổi mật khẩu</a></li>-->
-							<li><a href="/save-job/get-list">Công việc đã lưu</a></li>
-							<li><a href="/user/list-post">Danh sách bài đăng</a></li>
-							<li><a href="/user/get-list-apply">Công việc đã ứng
-									tuyển</a></li>
-							<li><a href="/user/get-list-company">Công ty đã theo dõi</a></li>
-							<!--            <li th:if="${session.user.role.id == 2}"><a href="/auth/logout" >Ứng cử viên tiềm năng</a></li>-->
-							<li><a href="#" onclick="document.getElementById('logoutForm').submit();">Đăng xuất</a>
-							<f:form id="logoutForm"
+							<li>
+								<a href="#"
+									onclick="document.getElementById('detailCompany').submit();">Hồ
+									Sơ</a>
+								<f:form id="detailCompany"
+									action="${pageContext.request.contextPath }/showProfile"
+									style="display:none;" method="get">
+									<input type="hidden"
+										value="${pageContext.request.userPrincipal.name }"
+										name="username">
+								</f:form>
+							</li>
+							<li>
+								<a href="#" onclick="document.getElementById('showListPost').submit();">Danh sách
+									bài đăng</a> 
+									<f:form id="showListPost" action="${pageContext.request.contextPath}/user/showListPost"
+										style="display:none;" method="get">
+										<input type="hidden" value="${pageContext.request.userPrincipal.name }" name="username">
+									</f:form>
+							</li>
+								<li><a href="#"
+									onclick="document.getElementById('logoutForm').submit();">Đăng
+										xuất</a> <f:form id="logoutForm"
+										action="${pageContext.request.contextPath }/logout"
+										method="post" style="display:none;">
+										<input type="hidden" name="_csrf" value="${_csrf.token }" />
+									</f:form></li>
+							</ul>
+						</li>
+						<li class="nav-item "><a href="/" class="nav-link">Đăng
+								tuyển</a></li>
+					</s:authorize>
+					<c:if test="${principal == null }">
+						<li class="nav-item cta cta-colored"><a
+							href="${pageContext.request.contextPath }/showLoginPage"
+							class="nav-link"> Đăng nhập</a></li>
+					</c:if>
+					<c:if test="${principal != null }">
+						<li class="nav-item">
+							<a class="nav-link" href="#"
+									onclick="document.getElementById('logoutForm').submit();">Đăng
+									xuất</a>
+								<f:form id="logoutForm"
 									action="${pageContext.request.contextPath }/logout"
 									method="post" style="display:none;">
 									<input type="hidden" name="_csrf" value="${_csrf.token }" />
 								</f:form>
-							</li>
-
-						</ul></li>
-
-					<li></li>
-
-					<li class="nav-item cta mr-md-1"><a href="/recruitment/post"
-						class="nav-link">Đăng tuyển</a></li>
-					<li class="nav-item cta cta-colored"><a class="nav-link"
-						href="#" onclick="document.getElementById('logoutForm').submit();">Đăng
-							xuất</a> <f:form id="logoutForm"
-							action="${pageContext.request.contextPath }/logout" method="post"
-							style="display:none;">
-							<input type="hidden" name="_csrf" value="${_csrf.token }" />
-						</f:form></li>
-
+						</li>
+					</c:if>
 				</ul>
 			</div>
 		</div>
@@ -194,10 +222,17 @@
                                 <div class="one-third mb-4 mb-md-0">
                                     <div class="job-post-item-header align-items-center">
                                         <span class="subadge">${recruitment.type}</span>
-                                        <h2 class="mr-3 text-black" ><a href="${'/recruitment/detail/'} +${recruitment.id}">${recruitment.title}</a></h2>
+                                        <h2 class="mr-3 text-black" ><a href="#" onclick="document.getElementById('detailRecruitment').submit();">${recruitment.title}</a></h2>
+                                        <f:form id="detailRecruitment" action="${pageContext.request.contextPath}/recruitment/detail">
+                                        <input type="hidden" value="${recruitment.id}" name="recruitmentId">
+                                        </f:form>
                                     </div>
                                     <div class="job-post-item-body d-block d-md-flex">
-                                        <div class="mr-3"><span class="icon-layers"></span> <a href="#">${recruitment.company.nameCompany}</a></div>
+                                        <div class="mr-3"><span class="icon-layers"></span> 
+                                        <a href="#" onclick="document.getElementById('detailCompanyForm').submit();">${recruitment.company.nameCompany}</a></div>
+                                        <f:form id="detailCompanyForm" action="${pageContext.request.contextPath}/recruitment/showDetailCompany" method="get">
+                                        <input type="hidden" name="companyId" value="${recruitment.company.id }">
+                                        </f:form>
                                         <div><span class="icon-my_location"></span> <span>${recruitment.address}</span></div>
                                     </div>
                                 </div>
@@ -208,15 +243,18 @@
 <!--                                            <span class="icon-heart"></span>-->
 <!--                                        </a>-->
 <!--                                    </div>-->
-                                    <a href="${'/recruitment/detail/'} +${recruitment.id}"  class="btn btn-primary py-2 ml-2">Xem chi tiết</a>
-                                    <a href="${'/recruitment/editpost/'} +${recruitment.id}"  class="btn btn-warning py-2 ml-2">Cập nhật</a>
-                                    <a class="btn btn-danger py-2 ml-2" href="" data-toggle="modal" data-target="${'#exampleModal'} + ${recruitment.id}">Xóa</a>
+                                    <a href="#" onclick="document.getElementById('detailRecruitment').submit();"  class="btn btn-primary py-2 ml-2">Xem chi tiết</a>
+                                    <a href="#" onclick="document.getElementById('editpost').submit();"  class="btn btn-warning py-2 ml-2">Cập nhật</a>
+                                    <f:form id="editpost" action="${pageContext.request.contextPath}/recruitment/editpost" method="get">
+                                    	<input type="hidden" value="${recruitment.id }" name="recruitmentId">
+                                    </f:form>
+                                    <a class="btn btn-danger py-2 ml-2" href="" data-toggle="modal" data-target="#exampleModal${recruitment.id}">Xóa</a>
 
                                 </div>
                             </div>
                         </div><!-- end -->
                         <!-- Modal -->
-                        <div class="modal fade" th:id="${'exampleModal'} + ${recruitment.id}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal fade" id="exampleModal${recruitment.id}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                             <div class="modal-dialog" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header">
@@ -226,14 +264,14 @@
                                         </button>
                                     </div>
                                     <div class="modal-body">
-                                        Bài đăng : <span th:text="${recruitment.title}"></span>
-                                        <form action="/recruitment/delete" method="post">
-                                            <input type="hidden" class="form-control" id="id" name="id" th:value="${recruitment.id}">
+                                        Bài đăng : <span>${recruitment.title}</span>
+                                        <f:form action="${pageContext.request.contextPath}/recruitment/delete" method="get">
+                                            <input type="hidden" class="form-control" id="id" name="recruitmentId" value="${recruitment.id}">
                                             <div class="modal-footer mt-1">
                                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
                                                 <button type="submit" class="btn btn-danger">Xóa</button>
                                             </div>
-                                        </form>
+                                        </f:form>
                                     </div>
 
                                 </div>
@@ -276,7 +314,7 @@
         });
 </script>
 
-<footer th:replace="public/fragments :: footer" class="ftco-footer ftco-bg-dark ftco-section">
+<footer class="ftco-footer ftco-bg-dark ftco-section">
 
 </footer>
 </body>

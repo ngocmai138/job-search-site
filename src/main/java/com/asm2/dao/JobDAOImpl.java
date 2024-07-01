@@ -186,10 +186,29 @@ public class JobDAOImpl implements JobDAO{
 							session.createQuery("select r from Recruitment r "
 												+ "join r.company c "
 												+ "join c.user u "
-												+ "where u.id= :userId",
+												+ "where u.id= :userId "
+												+ "and r.isActive = 1",
 												Recruitment.class);
 		query.setParameter("userId", userId);
 		return query.getResultList();
+	}
+
+	@Override
+	public Recruitment getRecruitment(int recruitmentId) {
+		return sessionFactory.getCurrentSession().get(Recruitment.class, recruitmentId);
+	}
+
+	@Override
+	public void deleteRecruitment(int recruitmentId) {
+		Session session = sessionFactory.getCurrentSession();
+		Recruitment recruitment = session.get(Recruitment.class, recruitmentId);
+		recruitment.setIsActive(false);
+		session.update(recruitment);
+	}
+
+	@Override
+	public void addOrUpdateRecruitment(Recruitment recruitment) {
+		sessionFactory.getCurrentSession().saveOrUpdate(recruitment);
 	}
 	
 

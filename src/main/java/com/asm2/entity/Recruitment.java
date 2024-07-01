@@ -27,13 +27,15 @@ public class Recruitment {
 	private int id;
 	@Column(name="address")
 	private String address;
+	@Column(name="created_at")
+	private Date createdAt;
 	@Column(name="description")
 	private String description;
 	@Column(name="experience")
 	private String experience;
 	@Column(name="quantity")
 	private int quantity;
-	@Column(name="rank")
+	@Column(name="`rank`")
 	private String rank;
 	@Column(name="salary")
 	private String salary;
@@ -57,16 +59,12 @@ public class Recruitment {
 	private Date deadline;
 	@Column(name="isActive")
 	private boolean isActive;
-	@ManyToMany(fetch = FetchType.LAZY,
-				cascade = {CascadeType.DETACH, CascadeType.MERGE,
-							CascadeType.PERSIST, CascadeType.REFRESH})
+	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "save_job",
 				joinColumns = @JoinColumn(name="recruitment_id"),
 				inverseJoinColumns = @JoinColumn(name="user_id"))
 	private List<User> users;
-	@OneToMany(fetch = FetchType.LAZY,
-				cascade = {CascadeType.DETACH, CascadeType.MERGE,
-							CascadeType.PERSIST, CascadeType.REFRESH})
+	@OneToMany(fetch = FetchType.LAZY)
 	@JoinColumn(name="recruitment_id")
 	private List<ApplyPost> applyPosts;
 	
@@ -156,10 +154,10 @@ public class Recruitment {
 	public void setDeadline(Date deadline) {
 		this.deadline = deadline;
 	}
-	public boolean isActive() {
+	public boolean getIsActive() {
 		return isActive;
 	}
-	public void setActive(boolean isActive) {
+	public void setIsActive(boolean isActive) {
 		this.isActive = isActive;
 	}
 	
@@ -176,6 +174,14 @@ public class Recruitment {
 	public void setApplyPosts(List<ApplyPost> applyPosts) {
 		this.applyPosts = applyPosts;
 	}
+	public Date getCreatedAt() {
+		return createdAt;
+	}
+
+	public void setCreatedAt(Date createdAt) {
+		this.createdAt = createdAt;
+	}
+
 	public void addUser(User user) {
 		if(users == null) {
 			users = new ArrayList<User>();

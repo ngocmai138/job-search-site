@@ -75,9 +75,7 @@ public class UserController {
 	public String listPost(@RequestParam("username") String userName,
 							Model model) {
 		User user = jobService.getUserByUsername(userName);
-		System.out.println("user iddddddddddddddd: "+user.getId());
 		List<Recruitment> recruitments = jobService.getRecruitments(user.getId());
-		System.out.println("number of recruitmentssssssssssss: "+recruitments.size());
 		model.addAttribute("user",user);
 		model.addAttribute("recruitments",recruitments);
 		return "post-list";

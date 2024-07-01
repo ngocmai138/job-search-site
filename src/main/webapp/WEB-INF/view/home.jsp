@@ -141,7 +141,7 @@
 								<a href="#" onclick="document.getElementById('showListPost').submit();">Danh sách
 									bài đăng</a> 
 									<f:form id="showListPost" action="${pageContext.request.contextPath}/user/showListPost"
-										style="display:none;">
+										style="display:none;" method="get">
 										<input type="hidden" value="${pageContext.request.userPrincipal.name }" name="username">
 									</f:form>
 							</li>
@@ -825,8 +825,7 @@
 	</script>
 
 
-	<footer th:replace="public/fragments :: footer"
-		class="ftco-footer ftco-bg-dark ftco-section"> </footer>
+	<footer class="ftco-footer ftco-bg-dark ftco-section"> </footer>
 
 
 	<!-- loader -->

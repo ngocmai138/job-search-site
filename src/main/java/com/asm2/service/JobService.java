@@ -27,8 +27,11 @@ public interface JobService {
 	public User getUserByUsername(String userName);
 	public User getUserById(int userId);
 	public Cv getCv(int cvId);
+	public Recruitment getRecruitment(int recruitmentId);
 	public void addOrUpdateUser(User user);
 	public void mergeUser(User user);
 	public void updateCompany(Company company);
 	public void mergeCompany(Company company);
+	public void deleteRecruitment(int recruitmentId);
+	public void addOrUpdateRecruitment(Recruitment recruitment);
 }

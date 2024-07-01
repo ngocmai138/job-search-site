@@ -125,4 +125,19 @@ public class JobServiceImpl implements JobService{
 		return jobDAO.getRecruitments(userId);
 	}
 
+	@Override
+	public Recruitment getRecruitment(int recruitmentId) {
+		return jobDAO.getRecruitment(recruitmentId);
+	}
+
+	@Override
+	public void deleteRecruitment(int recruitmentId) {
+		jobDAO.deleteRecruitment(recruitmentId);
+	}
+
+	@Override
+	public void addOrUpdateRecruitment(Recruitment recruitment) {
+		jobDAO.addOrUpdateRecruitment(recruitment);
+	}
+
 }
