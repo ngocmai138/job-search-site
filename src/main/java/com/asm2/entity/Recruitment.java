@@ -16,6 +16,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.PrePersist;
 import javax.persistence.Table;
 
 @Entity
@@ -64,8 +65,7 @@ public class Recruitment {
 				joinColumns = @JoinColumn(name="recruitment_id"),
 				inverseJoinColumns = @JoinColumn(name="user_id"))
 	private List<User> users;
-	@OneToMany(fetch = FetchType.LAZY)
-	@JoinColumn(name="recruitment_id")
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "recruitment")
 	private List<ApplyPost> applyPosts;
 	
 	public Recruitment() {}
@@ -193,6 +193,11 @@ public class Recruitment {
 			applyPosts = new ArrayList<ApplyPost>();
 		}
 		applyPosts.add(applyPost);
+	}
+	@PrePersist
+	public void onCreate() {
+		this.createdAt = new Date(System.currentTimeMillis());
+		this.isActive = true;
 	}
 	public Recruitment(String address, String description, String experience, int quantity, String rank, String salary,
 			int status, String title, String type, int view, Category category, Company company, Date deadline,

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.asm2.dao.JobDAO;
+import com.asm2.entity.ApplyPost;
 import com.asm2.entity.Category;
 import com.asm2.entity.Company;
 import com.asm2.entity.Cv;
@@ -138,6 +139,77 @@ public class JobServiceImpl implements JobService{
 	@Override
 	public void addOrUpdateRecruitment(Recruitment recruitment) {
 		jobDAO.addOrUpdateRecruitment(recruitment);
+	}
+
+	@Override
+	public List<Recruitment> getRecruitments(int userId, int pageSize, int pageNumber) {
+		return jobDAO.getRecruitments(userId, pageSize, pageNumber);
+	}
+
+	@Override
+	public Long getTotalRecruitment(int userId) {
+		return jobDAO.getTotalRecruitment(userId);
+	}
+
+	@Override
+	public List<ApplyPost> getApplyPostsByUserId(int userId, int pageSize, int pageNumber) {
+		return jobDAO.getApplyPostsByUserId(userId, pageSize, pageNumber);
+	}
+
+	@Override
+	public Long getTotalApplyPostByUserId(int userId) {
+		return jobDAO.getTotalApplyPostByUserId(userId);
+	}
+
+	@Override
+	public List<Recruitment> searchRecruitmentsByTitle(String keyword, int pageSize, int pageNumber) {
+		return jobDAO.searchRecruitmentsByTitle(keyword,pageSize,pageNumber);
+	}
+
+	@Override
+	public List<Recruitment> searchRecruitmentByCompany(String keyword, int pageSize, int pageNumber) {
+		return jobDAO.searchRecruitmentByCompany(keyword,pageSize,pageNumber);
+	}
+
+	@Override
+	public List<Recruitment> searchRecruitmentByAddress(String keyword, int pageSize, int pageNumber) {
+		return jobDAO.searchRecruitmentByAddress(keyword,pageSize,pageNumber);
+	}
+
+	@Override
+	public Long getTotalSearchRecruitmentsByTitle(String keyword) {
+		return jobDAO.getTotalSearchRecruitmentsByTitle(keyword);
+	}
+
+	@Override
+	public Long getTotalSearchRecruitmentsByCompany(String keyword) {
+		return jobDAO.getTotalSearchRecruitmentsByCompany(keyword);
+	}
+
+	@Override
+	public Long getTotalSearchRecruitmentsByAddress(String keyword) {
+		return jobDAO.getTotalSearchRecruitmentsByAddress(keyword);
+	}
+
+	@Override
+	public List<ApplyPost> getApplyPostsByRecruitmentId(int recruitmentId, int pageSize, int pageNumber) {
+		return jobDAO.getApplyPostsByRecruitmentId(recruitmentId, pageSize, pageNumber);
+	}
+
+	@Override
+	public Long getTotalApplyPostByRecruitmentId(int recruitmentId) {
+		return jobDAO.getTotalApplyPostByRecruitmentId(recruitmentId);
+	}
+
+	@Override
+	public Cv getCvByUserId(int userId) {
+		return jobDAO.getCvByUserId(userId);
+	}
+
+	@Override
+	public void addOrUpdateCv(Cv cv) {
+		jobDAO.addOrUpdateCv(cv);
+		
 	}
 
 }

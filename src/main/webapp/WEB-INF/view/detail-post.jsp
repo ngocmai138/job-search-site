@@ -68,8 +68,8 @@
 					<li class="nav-item" style="position: relative;"><a class="nav-link" href="#"> Hồ Sơ
 						</a>
 							<ul class="dropdown" >
+								<li><a href="${pageContext.request.contextPath}/showProfile?username=${pageContext.request.userPrincipal.name}">Hồ sơ</a></li>
 								<li><a href="/save-job/get-list">Công việc đã lưu</a></li>
-								<li><a href="${pageContext.request.contextPath}/user/showListPost">Danh sách bài đăng</a></li>
 								<li><a href="/user/get-list-apply">Công việc đã ứng
 										tuyển</a></li>
 								<li><a href="/user/get-list-company">Công ty đã theo
@@ -84,7 +84,7 @@
 							</ul></li>
 					</s:authorize>
 					<s:authorize access="hasRole('recruiter')">
-					<li class="nav-item"><a href="/" class="nav-link">Ứng cử
+					<li class="nav-item"><a href="${pageContext.request.contextPath }/listApplyPost?username=${pageContext.request.userPrincipal.name}" class="nav-link">Ứng cử
 							viên</a></li>
 						<li class="nav-item">
 							<a class="nav-link" href="#"> <s:authentication
@@ -120,15 +120,18 @@
 									</f:form></li>
 							</ul>
 						</li>
-						<li class="nav-item "><a href="/" class="nav-link">Đăng
-								tuyển</a></li>
+						<li class="nav-item "><a href="#" onclick="document.getElementById('postRecruitment').submit();" class="nav-link">Đăng
+								tuyển</a>
+							<f:form id="postRecruitment" action="${pageContext.request.contextPath }/recruitment/post" method="get">
+								<input type="hidden" value="${pageContext.request.userPrincipal.name}" name="username">
+							</f:form></li>
 					</s:authorize>
-					<c:if test="${principal == null }">
+					<s:authorize access="isAnonymous()">
 						<li class="nav-item cta cta-colored"><a
 							href="${pageContext.request.contextPath }/showLoginPage"
 							class="nav-link"> Đăng nhập</a></li>
-					</c:if>
-					<c:if test="${principal != null }">
+					</s:authorize>
+					<s:authorize access="isAuthenticated()">
 						<li class="nav-item">
 							<a class="nav-link" href="#"
 									onclick="document.getElementById('logoutForm').submit();">Đăng
@@ -139,7 +142,7 @@
 									<input type="hidden" name="_csrf" value="${_csrf.token }" />
 								</f:form>
 						</li>
-					</c:if>
+					</s:authorize>
 				</ul>
 			</div>
 		</div>
@@ -181,7 +184,7 @@
                         <img width="100" height="100" src="${pageContext.request.contextPath }/assets/images/${recruitment.company.logo}" alt="Image">
                     </div>
                     <div>
-                        <h2></h2>
+                        <h2>${recruitment.title}</h2>
                         <div>
                             <span class="icon-briefcase mr-2"></span><a class="ml-0 mr-2 mb-2"></a>
                             <span  class="icon-room mr-2"></span ><span class="m-2"></span>
@@ -225,7 +228,7 @@
                 <div class="bg-light p-3 border rounded mb-4">
                     <h3 class="text-primary  mt-3 h5 pl-3 mb-3 ">Tóm tắt công việc</h3>
                     <ul class="list-unstyled pl-3 mb-0">
-                       <li class="mb-2"> <strong class="text-black">Ngày tạo: </strong> <span>${recruitment.createAt}</span> </li>
+                       <li class="mb-2"> <strong class="text-black">Ngày tạo: </strong> <span>${recruitment.createdAt}</span> </li>
                         <li class="mb-2"><strong class="text-black">Kiểu công việc: </strong> <span>${recruitment.category.name}</span></li>
                         <li class="mb-2"><strong class="text-black">Loại công việc: </strong> <span>${recruitment.type}</span></li>
                         <li class="mb-2"><strong class="text-black">Kinh nghiệm: </strong> <span>${recruitment.experience}</span></li>
@@ -287,46 +290,62 @@
         </div>
     </div>
 </div>
+
+
 <section class="site-section" id="next">
     <div class="container">
 
-        <div class="row mb-5 justify-content-center">
+          <div class="row mb-5 justify-content-center">
             <div class="col-md-7 text-center">
-                <h2 class="section-title mb-2" th:if="${applyPosts}">Danh sách ứng viên ứng tuyển</h2>
-                <h2 class="section-title mb-2" th:unless="${applyPosts}">Những công việc liên quan</h2>
-            </div>
+            <c:choose>
+            <c:when test="${ totalApplyPosts >0}">
+                <h2 class="section-title mb-2">Danh sách ứng viên ứng tuyển</h2>
+            </c:when>
+            <c:otherwise>
+                <h2 class="section-title mb-2">Những công việc liên quan</h2>
+            </c:otherwise>
+            </c:choose>
+            </div> 
         </div>
-
-        <div th:if="${applyPosts != null}"  class="row">
-            <div class="col-lg-12 pr-lg-4">
+        <div class="row">
+             <div class="col-lg-12 pr-lg-4">
                 <div class="row">
-                    <th:block th:if="${applyPosts.size() != 0}" th:each="applyPost : ${applyPosts}">
+              <c:if test="${totalApplyPosts > 0 }">
+                  <c:forEach var="applyPost" items="${applyPosts}">
                         <div class="col-md-12" style="box-shadow: rgba(0, 0, 0, 0.4) 0px 0px 10px;margin: 20px auto;">
                             <div class="team d-md-flex p-4 bg-white">
-                                <IMG class="img" th:src="${applyPost.user.image != null ? applyPost.user.image : 'https://st.quantrimang.com/photos/image/072015/22/avatar.jpg'}"></IMG>
+                            <c:choose>
+                            <c:when test="${applyPost.user.image != null}">
+                            <IMG class="img" src="${pageContext.request.contextPath }/assets/images/${applyPost.user.image}">
+                            </c:when>
+                            <c:otherwise>
+                                <IMG class="img" src="https://st.quantrimang.com/photos/image/072015/22/avatar.jpg"></IMG>
+                            </c:otherwise>
+                            </c:choose>
                                 <div class="text pl-md-4">
-                                    <H5 class="location mb-0" th:text="${applyPost.user.fullName}"></H5>
-                                    <p style="display: block;color: black" th:text="${applyPost.user.address}"></p>
-                                    <span class="position" style="display: block;color: black" th:text="${applyPost.user.email}"></span>
-                                    <p class="mb-4" style="width: 700px" th:utext="${applyPost.user.description}">.</p>
-                                    <div class="row">
+                                    <H5 class="location mb-0">${applyPost.user.userName}</H5>
+                                    <p style="display: block;color: black">${applyPost.user.address}</p>
+                                    <span class="position" style="display: block;color: black">${applyPost.user.email}</span>
+                                    <p class="mb-4" style="width: 700px">${applyPost.user.description}</p>
+                              <%--      <div class="row">
                                         <p><a href="#" th:if="${applyPost.nameCv != null}" class="btn btn-primary" th:href="${'http://localhost:8080/resources/uploads/'} +${applyPost.nameCv}" >Xem cv</a></p>
                                         <p th:if="${applyPost.status == 0}" style="margin-left: 10px"><a class="btn btn-outline-primary" th:href="${'/user/approve/'} +${applyPost.user.id} +${'/'} +${recruitment.id}" >Duyệt</a></p>
                                         <p th:if="${applyPost.status == 1}" style="margin-left: 10px;margin-top: 15px"><span style="color: #1e7e34;font-weight: bold" >Đã duyệt</span></p>
-                                    </div>
-
+                                    </div> --%> 
                                 </div>
                             </div>
                         </div>
-                    </th:block>
-                    <th:block th:if="${applyPosts.size() == 0}">
+                </c:forEach>
+                 </c:if>
+               
+                <c:if test="${totalApplyPosts==0 }">
                         <p>Chưa có ứng cử viên nào ứng tuyển</p>
-                    </th:block>
+                </c:if>
 
 
                 </div>
-            </div>
 
+            </div>
             <div class="col-lg-4 sidebar">
                 <div class="sidebar-box bg-white p-4 ftco-animate">
                     <h3 class="heading-sidebar">Browse Category</h3>
@@ -375,9 +394,9 @@
                         <label for="option-job-type-6"><input type="checkbox" id="option-job-type-6" name="vehicle" value=""> Fixed</label><br>
                     </form>
                 </div>
-            </div>
+            </div> 
         </div>
-        <th:block  th:each="recruitment : ${listRelated}">
+   <%--     <th:block  th:each="recruitment : ${listRelated}">
             <div th:unless="${applyPosts}" class="col-md-12 ">
                 <div class="job-post-item p-4 d-block d-lg-flex align-items-center">
                     <div class="one-third mb-4 mb-md-0">
@@ -409,9 +428,9 @@
                         <a  data-toggle="modal" th:data-target="${'#exampleModal'}+${recruitment.id}" class="btn btn-primary py-2">Apply Job</a>
                     </div>
                 </div>
-            </div><!-- end -->
-        </th:block>
-
+            </div>
+        </th:block> 
+--%>
         <script>
 
             function apply(id){
@@ -487,7 +506,7 @@
 
             }
 
-
+ 
             function save(id){
                 var name = "#idRe" +id;
                 var idRe = $(name).val();

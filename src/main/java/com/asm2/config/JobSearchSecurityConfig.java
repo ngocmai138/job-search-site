@@ -12,6 +12,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.multipart.MultipartResolver;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 @Configuration
 @EnableWebSecurity
@@ -45,6 +47,9 @@ public class JobSearchSecurityConfig {
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
 		return http
 					.authorizeRequests(configurer ->
+										configurer.antMatchers("/user/uploadCv").permitAll()
+													.antMatchers("/**").permitAll())
+					.authorizeRequests(configurer ->
 										configurer.antMatchers("/admin").hasRole("admin")
 													.antMatchers("/**").permitAll())
 					.formLogin(configurer ->
@@ -59,7 +64,10 @@ public class JobSearchSecurityConfig {
 											.permitAll())
 					.exceptionHandling(configurer ->
 										configurer.accessDeniedPage("/access-denied"))
+					.csrf(csrf->csrf.disable())
 					.build();
 	} 
+	
+	
 	
 }

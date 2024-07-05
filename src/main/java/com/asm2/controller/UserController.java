@@ -1,32 +1,115 @@
 package com.asm2.controller;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.asm2.entity.Company;
+import com.asm2.entity.Cv;
 import com.asm2.entity.Recruitment;
-import com.asm2.entity.Role;
 import com.asm2.entity.User;
 import com.asm2.service.JobService;
 
 @Controller
 @RequestMapping("/user")
 public class UserController {
+	private static String UPLOADED_FOLDER = "src/main/resources/uploads/";
+//	private static String UPLOADED_FOLDER = "F:/Downloads/Github projects/job-search-site/src/main/resources/uploads/";
+	
+	
+	
+	@RequestMapping("/uploadCv")
+	public String uploadCv(@RequestParam("file") MultipartFile file,
+							@RequestParam("userId") int userId,
+							HttpServletRequest request,
+							RedirectAttributes redirectAttributes) {
+		User user = jobService.getUserById(userId);
+		String fileName = user.getUserName()+".pdf";
+		if(file.isEmpty()) {
+			redirectAttributes.addFlashAttribute("message","Please select a file to upload");
+		}
+		try {
+			byte[] bytes = file.getBytes();
+			Path path = Paths.get(UPLOADED_FOLDER+file.getOriginalFilename());
+			Files.write(path, bytes);
+			
+			Cv existingCv = jobService.getCvByUserId(userId);
+			if(existingCv!=null) {
+				existingCv.setFileName(fileName);
+				jobService.addOrUpdateCv(existingCv);
+			}else {
+				Cv cv = new Cv();
+				cv.setFileName(fileName);
+				cv.setUser(user);
+				jobService.addOrUpdateCv(cv);
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		String referer = request.getHeader("Referer");
+		redirectAttributes.addFlashAttribute("message","You successfully uploaded CV");
+		return "redirect:"+referer;
+	}
+	
+//	@PostMapping("/uploadCv")
+//	public @ResponseBody String uploadCv(@RequestParam("file") MultipartFile file,
+//							@RequestParam("userId") int userId,
+//							RedirectAttributes redirectAttributes) {
+//		System.out.println("UUUUUUUUUpppload");
+//		User user = jobService.getUserById(userId);
+//		String fileName = user.getUserName()+".pdf";
+//		if(file.isEmpty()) {
+//			System.out.println("No file selected.");
+//			redirectAttributes.addFlashAttribute("message","Please select a file to upload");
+//			return "No file selected.";
+//		}
+//		try {
+//			byte[] bytes = file.getBytes();
+//			Path path = Paths.get(UPLOADED_FOLDER+fileName);
+//			Files.createDirectories(path.getParent());
+//			Files.write(path, bytes);
+//			System.out.println("File saved: " + path.toString());
+//			
+//			Cv existingCv = jobService.getCvByUserId(userId);
+//			if(existingCv!=null) {
+//				existingCv.setFileName(fileName);
+//				jobService.addOrUpdateCv(existingCv);
+//			}else {
+//				Cv cv = new Cv();
+//				cv.setFileName(fileName);
+//				cv.setUser(user);
+//				jobService.addOrUpdateCv(cv);
+//			}
+//		}catch (Exception e) {
+//			e.printStackTrace();
+//			return "Error uploading file";
+//		}
+//		return fileName;	
+//	}
+	
+	
 	@Autowired
 	private JobService jobService;
 	@RequestMapping("/updateProfile")
 	public String updateProfile(@ModelAttribute("user") User user,
-								@RequestParam("companyId") int companyId,
+								@RequestParam(value = "companyId", required = false) Integer companyId,
 								HttpServletRequest request,
 								RedirectAttributes redirectAttributes) {
 		User existUser = jobService.getUserById(user.getId());
@@ -44,11 +127,13 @@ public class UserController {
 		user.setApplyPosts(existUser.getApplyPosts());
 		
 		//Gắn user lại cho company
-		Company company = jobService.getCompanyById(companyId);
-		company.setUser(user);
+		if(companyId!=null) {			
+			Company company = jobService.getCompanyById(companyId);
+			company.setUser(user);
+			jobService.updateCompany(company);
+		}
 		
 		jobService.addOrUpdateUser(user);
-		jobService.updateCompany(company);
 		redirectAttributes.addFlashAttribute("update_user_message","Update User successful!!");
 		return "redirect:"+referer;
 	}
@@ -73,11 +158,29 @@ public class UserController {
 	}
 	@RequestMapping("/showListPost")
 	public String listPost(@RequestParam("username") String userName,
+							@RequestParam(name="pageSize", defaultValue = "5") int pageSize,
+							@RequestParam(name="pageNumber", defaultValue = "1") int pageNumber,
 							Model model) {
 		User user = jobService.getUserByUsername(userName);
-		List<Recruitment> recruitments = jobService.getRecruitments(user.getId());
+		List<Recruitment> recruitments = jobService.getRecruitments(user.getId(),pageSize, pageNumber);
+		Long totalRecruitments = jobService.getTotalRecruitment(user.getId());
+		int totalPage = (int)Math.ceil((double)totalRecruitments/pageSize);
+		int pagePrev = pageNumber-1;
+		int pageNext = pageNumber+1;
 		model.addAttribute("user",user);
 		model.addAttribute("recruitments",recruitments);
+		model.addAttribute("pagePrev",pagePrev);
+		model.addAttribute("pageNext",pageNext);
+		model.addAttribute("totalPage",totalPage);
+		model.addAttribute("pageSize",pageSize);
+		model.addAttribute("pageNumber",pageNumber);
 		return "post-list";
 	}
+	@RequestMapping("/deleteCv")
+	public String deleteCv(@RequestParam("idCv") String idCv,
+							HttpServletRequest request) {
+		String referer = request.getHeader("Referer");
+		return "redirect:"+referer;
+	}
+	
 }

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.asm2.entity.ApplyPost;
 import com.asm2.entity.Category;
 import com.asm2.entity.Company;
 import com.asm2.entity.Recruitment;
@@ -25,8 +26,14 @@ public class RecruitmentController {
 	private JobService jobService;
 	@RequestMapping("/detail")
 	public String showDetail(@RequestParam("recruitmentId") int recruitmentId,
+								@RequestParam(name="pageSize", defaultValue = "5") int pageSize,
+								@RequestParam(name="pageNumber", defaultValue = "1") int pageNumber,
 								Model model) {
 		Recruitment recruitment = jobService.getRecruitment(recruitmentId);
+		List<ApplyPost> applyPosts = jobService.getApplyPostsByRecruitmentId(recruitmentId, pageSize, pageNumber);
+		Long totalApplyPosts = jobService.getTotalApplyPostByRecruitmentId(recruitmentId);
+		model.addAttribute("applyPosts",applyPosts);
+		model.addAttribute("totalApplyPosts",totalApplyPosts);
 		model.addAttribute("recruitment",recruitment);
 		return "detail-post";
 	}
@@ -65,5 +72,101 @@ public class RecruitmentController {
 		model.addAttribute(recruitment);
 		redirectAttributes.addFlashAttribute("success_msg","success");
 		return "redirect:"+referer;
+	}
+	@RequestMapping("/post")
+	public String post(@RequestParam("username") String userName,
+						Model model) {
+		Company company = jobService.getCompanyByUsername(userName);
+		List<Category> categories = jobService.getCategories();
+		model.addAttribute("company",company);
+		model.addAttribute("categories",categories);
+		return "post-job";
+	}
+	@RequestMapping("/add")
+	public String add(@ModelAttribute("recruitment") Recruitment recruitment,
+						HttpServletRequest request,
+						RedirectAttributes redirectAttributes) {
+		jobService.addOrUpdateRecruitment(recruitment);
+		String referer = request.getHeader("Referer");
+		redirectAttributes.addFlashAttribute("msg_success","success");
+		return "redirect:"+referer;
+	}
+	@RequestMapping("/searchTitle")
+	public String searchTitle(@RequestParam("keySearch") String keyword,
+			@RequestParam(name="pageSize", defaultValue = "5") int pageSize,
+			@RequestParam(name="pageNumber", defaultValue = "1") int pageNumber,
+							Model model) {
+		Long totalCompany = jobService.getTotalCompany();
+		Long totalRecruitment = jobService.getTotalRecruitment();
+		Long totalUser = jobService.getTotalUser();
+		List<Recruitment> recruitments = jobService.searchRecruitmentsByTitle(keyword,pageSize,pageNumber);
+		Long totalRecruitments = jobService.getTotalSearchRecruitmentsByTitle(keyword);
+		int totalPages = (int) Math.ceil((double) totalRecruitments/pageSize);
+		int pagePrev = pageNumber-1;
+		int pageNext = pageNumber+1;
+		model.addAttribute("pagePrev",pagePrev);
+		model.addAttribute("pageNext",pageNext);
+		model.addAttribute("totalPages",totalPages);
+		model.addAttribute("numberCompany", totalCompany);
+		model.addAttribute("numberCandidate", totalUser);
+		model.addAttribute("numberRecruitment", totalRecruitment);
+		model.addAttribute("totalRecruitments", totalRecruitments);
+		model.addAttribute("recruitments",recruitments);
+		model.addAttribute("pageNumber",pageNumber);
+		model.addAttribute("pageSize", pageSize);
+		model.addAttribute("keySearch",keyword);
+		return "result-search";
+	}
+	@RequestMapping("/searchCompanyName")
+	public String searchCompanyName(@RequestParam("keySearch") String keyword,
+			@RequestParam(name="pageSize", defaultValue = "5") int pageSize,
+			@RequestParam(name="pageNumber", defaultValue = "1") int pageNumber,
+									Model model) {
+		Long totalCompany = jobService.getTotalCompany();
+		Long totalRecruitment = jobService.getTotalRecruitment();
+		Long totalUser = jobService.getTotalUser();
+		List<Recruitment> recruitments = jobService.searchRecruitmentByCompany(keyword,pageSize,pageNumber);
+		Long totalRecruitments = jobService.getTotalSearchRecruitmentsByCompany(keyword);
+		int totalPages = (int) Math.ceil((double) totalRecruitments/pageSize);
+		int pagePrev = pageNumber-1;
+		int pageNext = pageNumber+1;
+		model.addAttribute("pagePrev",pagePrev);
+		model.addAttribute("pageNext",pageNext);
+		model.addAttribute("totalPages",totalPages);
+		model.addAttribute("recruitments",recruitments);
+		model.addAttribute("numberCompany", totalCompany);
+		model.addAttribute("numberCandidate", totalUser);
+		model.addAttribute("numberRecruitment", totalRecruitment);
+		model.addAttribute("totalRecruitments", totalRecruitments);
+		model.addAttribute("pageNumber",pageNumber);
+		model.addAttribute("pageSize", pageSize);
+		model.addAttribute("keySearch",keyword);
+		return "result-search-company";
+	}
+	@RequestMapping("/searchAddress")
+	public String searchAddress(@RequestParam("keySearch") String keyword,
+			@RequestParam(name="pageSize", defaultValue = "5") int pageSize,
+			@RequestParam(name="pageNumber", defaultValue = "1") int pageNumber,
+									Model model) {
+		Long totalCompany = jobService.getTotalCompany();
+		Long totalRecruitment = jobService.getTotalRecruitment();
+		Long totalUser = jobService.getTotalUser();
+		List<Recruitment> recruitments = jobService.searchRecruitmentByAddress(keyword,pageSize,pageNumber);
+		Long totalRecruitments = jobService.getTotalSearchRecruitmentsByAddress(keyword);
+		int totalPages = (int) Math.ceil((double) totalRecruitments/pageSize);
+		int pagePrev = pageNumber-1;
+		int pageNext = pageNumber+1;
+		model.addAttribute("pagePrev",pagePrev);
+		model.addAttribute("pageNext",pageNext);
+		model.addAttribute("totalPages",totalPages);
+		model.addAttribute("recruitments",recruitments);
+		model.addAttribute("numberCompany", totalCompany);
+		model.addAttribute("numberCandidate", totalUser);
+		model.addAttribute("numberRecruitment", totalRecruitment);
+		model.addAttribute("totalRecruitments", totalRecruitments);
+		model.addAttribute("pageNumber",pageNumber);
+		model.addAttribute("pageSize", pageSize);
+		model.addAttribute("keySearch",keyword);
+		return "result-search-address";
 	}
 }

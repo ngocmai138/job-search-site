@@ -5,6 +5,7 @@ import java.sql.Date;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -27,10 +28,12 @@ public class ApplyPost {
 	private String text;
 	@Column(name="name_cv")
 	private String nameCv;
+	@Column(name="image")
+	private String image;
 	@JoinColumn(name="recruitment_id")
+	@ManyToOne(fetch = FetchType.EAGER)
 	private Recruitment recruitment;
-	@ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE,
-							CascadeType.PERSIST, CascadeType.REFRESH})
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name="user_id")
 	private User user;
 	
@@ -78,6 +81,14 @@ public class ApplyPost {
 	public void setUser(User user) {
 		this.user = user;
 	}
+	public String getImage() {
+		return image;
+	}
+
+	public void setImage(String image) {
+		this.image = image;
+	}
+
 	public ApplyPost(Date createdAt, int status, String text, String nameCv, Recruitment recruitment, User user) {
 		super();
 		this.createdAt = createdAt;

@@ -71,8 +71,8 @@
 					<li class="nav-item" style="position: relative;"><a class="nav-link" href="#"> Hồ Sơ
 						</a>
 							<ul class="dropdown" >
+								<li><a href="${pageContext.request.contextPath}/showProfile?username=${pageContext.request.userPrincipal.name}">Hồ sơ</a></li>
 								<li><a href="/save-job/get-list">Công việc đã lưu</a></li>
-								<li><a href="${pageContext.request.contextPath}/user/showListPost">Danh sách bài đăng</a></li>
 								<li><a href="/user/get-list-apply">Công việc đã ứng
 										tuyển</a></li>
 								<li><a href="/user/get-list-company">Công ty đã theo
@@ -87,7 +87,7 @@
 							</ul></li>
 					</s:authorize>
 					<s:authorize access="hasRole('recruiter')">
-					<li class="nav-item"><a href="/" class="nav-link">Ứng cử
+					<li class="nav-item"><a href="${pageContext.request.contextPath }/listApplyPost?username=${pageContext.request.userPrincipal.name}" class="nav-link">Ứng cử
 							viên</a></li>
 						<li class="nav-item">
 							<a class="nav-link" href="#"> <s:authentication
@@ -123,15 +123,20 @@
 									</f:form></li>
 							</ul>
 						</li>
-						<li class="nav-item "><a href="/" class="nav-link">Đăng
-								tuyển</a></li>
+						<li class="nav-item ">
+							<a href="#" onclick="document.getElementById('postRecruitment').submit();" class="nav-link">Đăng
+								tuyển</a>
+							<f:form id="postRecruitment" action="${pageContext.request.contextPath }/recruitment/post" method="get">
+								<input type="hidden" value="${pageContext.request.userPrincipal.name}" name="username">
+							</f:form>
+						</li>
 					</s:authorize>
-					<c:if test="${principal == null }">
+					<s:authorize access="isAnonymous()">
 						<li class="nav-item cta cta-colored"><a
 							href="${pageContext.request.contextPath }/showLoginPage"
 							class="nav-link"> Đăng nhập</a></li>
-					</c:if>
-					<c:if test="${principal != null }">
+					</s:authorize>
+					<s:authorize access="isAuthenticated()">
 						<li class="nav-item">
 							<a class="nav-link" href="#"
 									onclick="document.getElementById('logoutForm').submit();">Đăng
@@ -142,7 +147,7 @@
 									<input type="hidden" name="_csrf" value="${_csrf.token }" />
 								</f:form>
 						</li>
-					</c:if>
+					</s:authorize>
 				</ul>
 			</div>
 		</div>
@@ -187,7 +192,7 @@
     </script>
 </div>
 </c:if>
-<s:authorize access="hasRole('candidate')">
+<s:authorize access="!hasRole('recruiter')">
 <div class="hero-wrap hero-wrap-2" style="background-image: url('${pageContext.request.contextPath}/assets/images/bg_1.jpg');" data-stellar-background-ratio="0.5">
     <div class="overlay"></div>
     <div class="container">
@@ -222,10 +227,8 @@
                                 <div class="one-third mb-4 mb-md-0">
                                     <div class="job-post-item-header align-items-center">
                                         <span class="subadge">${recruitment.type}</span>
-                                        <h2 class="mr-3 text-black" ><a href="#" onclick="document.getElementById('detailRecruitment').submit();">${recruitment.title}</a></h2>
-                                        <f:form id="detailRecruitment" action="${pageContext.request.contextPath}/recruitment/detail">
-                                        <input type="hidden" value="${recruitment.id}" name="recruitmentId">
-                                        </f:form>
+                                        <h2 class="mr-3 text-black" ><a href="${pageContext.request.contextPath}/recruitment/detail?recruitmentId=${recruitment.id}">${recruitment.title}</a></h2>
+                                        
                                     </div>
                                     <div class="job-post-item-body d-block d-md-flex">
                                         <div class="mr-3"><span class="icon-layers"></span> 
@@ -243,7 +246,7 @@
 <!--                                            <span class="icon-heart"></span>-->
 <!--                                        </a>-->
 <!--                                    </div>-->
-                                    <a href="#" onclick="document.getElementById('detailRecruitment').submit();"  class="btn btn-primary py-2 ml-2">Xem chi tiết</a>
+                                    <a href="${pageContext.request.contextPath}/recruitment/detail?recruitmentId=${recruitment.id}" class="btn btn-primary py-2 ml-2">Xem chi tiết</a>
                                     <a href="#" onclick="document.getElementById('editpost').submit();"  class="btn btn-warning py-2 ml-2">Cập nhật</a>
                                     <f:form id="editpost" action="${pageContext.request.contextPath}/recruitment/editpost" method="get">
                                     	<input type="hidden" value="${recruitment.id }" name="recruitmentId">
@@ -285,14 +288,29 @@
                     <div class="col text-center">
                         <div class="block-27">
                             <ul>
-                                <li th:if="${numberPage>0}"><a th:href="@{/user/list-post(page = ${list.number - 1})}">&lt;</a></li>
-                                <th:block th:each="recruitment,state  : ${recruitmentList}">
+                            	<c:if test="${pagePrev>0}">
+                                <li><a href="${pageContext.request.contextPath}/user/showListPost?pageNumber=${pagePrev}&pageSize=${pageSize}&username=${user.userName}">&lt;</a></li>
+                            	</c:if>
+                            	<c:forEach var="i" begin="1" end="${totalPage }">
 <!--                                    <th:block th:if="${numberPage == 0}">-->
 <!--                                        <li th:class="${numberPage == 0 ? 'active' : null }"><a th:href="@{/user/list-post(page = ${state.index})}" th:text="${state.index + 1}"></a></li>-->
 <!--                                    </th:block>-->
-                                        <li th:class="${numberPage == state.index  ? 'active' : null }"><a th:href="@{/user/list-post(page = ${state.index})}" th:text="${state.index + 1}"></a></li>
-                                </th:block>
-                                <li th:if="${numberPage<list.totalPages - 1}"><a th:href="@{/user/list-post(page = ${list.number + 1})}">&gt;</a></li>
+                                        <li class="${pageNumber == i  ? 'active' : ' ' }"><a
+												href="#"
+												onclick="document.getElementById('showListPost${i}').submit();">${i}</a>
+												<f:form id="showListPost${i}"
+													action="${pageContext.request.contextPath}/user/showListPost"
+													method="get">
+													<input type="hidden" name="pageNumber" value="${i}">
+													<input type="hidden" name="pageSize" value="${pageSize}">
+													<input type="hidden" name="username"
+														value="${user.userName }">
+												</f:form></li>
+                            	
+                            	</c:forEach>
+                            	<c:if test="${pageNext<=totalPage}">
+                                <li><a href="${pageContext.request.contextPath}/user/showListPost?pageNumber=${pageNext}&pageSize=${pageSize}&username=${user.userName}">&gt;</a></li>
+                            	</c:if>
                             </ul>
                         </div>
                     </div>

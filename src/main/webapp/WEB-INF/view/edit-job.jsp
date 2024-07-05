@@ -99,8 +99,8 @@
 					<li class="nav-item" style="position: relative;"><a class="nav-link" href="#"> Hồ Sơ
 						</a>
 							<ul class="dropdown" >
+								<li><a href="${pageContext.request.contextPath}/showProfile?username=${pageContext.request.userPrincipal.name}">Hồ sơ</a></li>
 								<li><a href="/save-job/get-list">Công việc đã lưu</a></li>
-								<li><a href="${pageContext.request.contextPath}/user/showListPost">Danh sách bài đăng</a></li>
 								<li><a href="/user/get-list-apply">Công việc đã ứng
 										tuyển</a></li>
 								<li><a href="/user/get-list-company">Công ty đã theo
@@ -115,7 +115,7 @@
 							</ul></li>
 					</s:authorize>
 					<s:authorize access="hasRole('recruiter')">
-					<li class="nav-item"><a href="/" class="nav-link">Ứng cử
+					<li class="nav-item"><a href="${pageContext.request.contextPath }/listApplyPost?username=${pageContext.request.userPrincipal.name}" class="nav-link">Ứng cử
 							viên</a></li>
 						<li class="nav-item">
 							<a class="nav-link" href="#"> <s:authentication
@@ -151,15 +151,18 @@
 									</f:form></li>
 							</ul>
 						</li>
-						<li class="nav-item "><a href="/" class="nav-link">Đăng
-								tuyển</a></li>
+						<li class="nav-item "><a href="#" onclick="document.getElementById('postRecruitment').submit();" class="nav-link">Đăng
+								tuyển</a>
+							<f:form id="postRecruitment" action="${pageContext.request.contextPath }/recruitment/post" method="get">
+								<input type="hidden" value="${pageContext.request.userPrincipal.name}" name="username">
+							</f:form></li>
 					</s:authorize>
-					<c:if test="${principal == null }">
+					<s:authorize access="isAnonymous()">
 						<li class="nav-item cta cta-colored"><a
 							href="${pageContext.request.contextPath }/showLoginPage"
 							class="nav-link"> Đăng nhập</a></li>
-					</c:if>
-					<c:if test="${principal != null }">
+					</s:authorize>
+					<s:authorize access="isAuthenticated()">
 						<li class="nav-item">
 							<a class="nav-link" href="#"
 									onclick="document.getElementById('logoutForm').submit();">Đăng
@@ -170,7 +173,7 @@
 									<input type="hidden" name="_csrf" value="${_csrf.token }" />
 								</f:form>
 						</li>
-					</c:if>
+					</s:authorize>
 				</ul>
 			</div>
 		</div>

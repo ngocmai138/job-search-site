@@ -10,6 +10,7 @@ import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.asm2.entity.ApplyPost;
 import com.asm2.entity.Category;
 import com.asm2.entity.Company;
 import com.asm2.entity.Cv;
@@ -209,6 +210,177 @@ public class JobDAOImpl implements JobDAO{
 	@Override
 	public void addOrUpdateRecruitment(Recruitment recruitment) {
 		sessionFactory.getCurrentSession().saveOrUpdate(recruitment);
+	}
+
+	@Override
+	public List<Recruitment> getRecruitments(int userId, int pageSize, int pageNumber) {
+		Session session = sessionFactory.getCurrentSession();
+		Query<Recruitment> query = session.createQuery(
+				"select r from Recruitment r "
+				+ "join r.company c "
+				+ "join c.user u "
+				+ "where u.id= :userId "
+				+ "and r.isActive = 1",Recruitment.class);
+		query.setParameter("userId", userId);
+		query.setMaxResults(pageSize);
+		query.setFirstResult((pageNumber-1)*pageSize);
+		return query.getResultList();
+	}
+
+	@Override
+	public Long getTotalRecruitment(int userId) {
+		Session session = sessionFactory.getCurrentSession();
+		Query<Long> query = session.createQuery(""
+				+ "select count(r) from Recruitment r "
+				+ "join r.company c "
+				+ "join c.user u "
+				+ "where u.id= :userId "
+				+ "and r.isActive = 1",Long.class);
+		query.setParameter("userId",userId);
+		return query.uniqueResult();
+	}
+
+	@Override
+	public List<ApplyPost> getApplyPostsByUserId(int userId, int pageSize, int pageNumber) {
+		Session session = sessionFactory.getCurrentSession();
+		Query<ApplyPost> query = session.createQuery(""
+				+ "select a "
+				+ "from ApplyPost a "
+				+ "join a.recruitment r "
+				+ "join r.company c "
+				+ "join c.user u "
+				+ "where u.id = :userId",ApplyPost.class);
+		query.setParameter("userId", userId);
+		query.setFirstResult((pageNumber-1)*pageSize);
+		query.setMaxResults(pageSize);
+		return query.getResultList();
+	}
+
+	@Override
+	public Long getTotalApplyPostByUserId(int userId) {
+		Session session = sessionFactory.getCurrentSession();
+		Query<Long> query = session.createQuery(""
+				+ "select count(r) "
+				+ "from ApplyPost a "
+				+ "join a.recruitment r "
+				+ "join r.company c "
+				+ "join c.user u "
+				+ "where u.id = :userId",Long.class);
+		query.setParameter("userId", userId);
+		return query.uniqueResult();
+	}
+
+	@Override
+	public List<Recruitment> searchRecruitmentsByTitle(String keyword, int pageSize, int pageNumber) {
+		Session session = sessionFactory.getCurrentSession();
+		Query<Recruitment> query = session.createQuery("from Recruitment "
+				+ "where title like :keyword",Recruitment.class);
+		query.setParameter("keyword", "%"+keyword+"%");
+		query.setMaxResults(pageSize);
+		query.setFirstResult((pageNumber-1)*pageSize);
+		List<Recruitment> recruitments = query.getResultList();
+		return recruitments;
+	}
+
+	@Override
+	public List<Recruitment> searchRecruitmentByCompany(String keyword, int pageSize, int pageNumber) {
+		Session session = sessionFactory.getCurrentSession();
+		Query<Recruitment> query = session.createQuery(""
+				+ "select r from Recruitment r "
+				+ "join r.company c "
+				+ "where c.nameCompany like :keyword",Recruitment.class);
+		query.setParameter("keyword", "%"+keyword+"%");
+		query.setMaxResults(pageSize);
+		query.setFirstResult((pageNumber-1)*pageSize);
+		List<Recruitment> recruitments = query.getResultList();
+		return recruitments;
+	}
+
+	@Override
+	public List<Recruitment> searchRecruitmentByAddress(String keyword, int pageSize, int pageNumber) {
+		Session session = sessionFactory.getCurrentSession();
+		Query<Recruitment> query = session.createQuery(""
+				+ "select r from Recruitment r "
+				+ "where address like :keyword",Recruitment.class);
+		query.setParameter("keyword", "%"+keyword+"%");
+		query.setMaxResults(pageSize);
+		query.setFirstResult((pageNumber-1)*pageSize);
+		List<Recruitment> recruitments = query.getResultList();
+		return recruitments;
+	}
+
+	@Override
+	public Long getTotalSearchRecruitmentsByTitle(String keyword) {
+		Session session = sessionFactory.getCurrentSession();
+		Query<Long> query = session.createQuery(""
+				+ "select count(r) from Recruitment r "
+				+ "where title like :keyword",Long.class);
+		query.setParameter("keyword", "%"+keyword+"%");
+		return query.uniqueResult();
+	}
+
+	@Override
+	public Long getTotalSearchRecruitmentsByCompany(String keyword) {
+		Session session = sessionFactory.getCurrentSession();
+		Query<Long> query = session.createQuery(""
+				+ "select count(r) from Recruitment r "
+				+ "join r.company c "
+				+ "where c.nameCompany like :keyword",Long.class);
+		query.setParameter("keyword", "%"+keyword+"%");
+		return query.uniqueResult();
+	}
+
+	@Override
+	public Long getTotalSearchRecruitmentsByAddress(String keyword) {
+		Session session = sessionFactory.getCurrentSession();
+		Query<Long> query = session.createQuery(""
+				+ "select count(r) from Recruitment r "
+				+ "where address like :keyword",Long.class);
+		query.setParameter("keyword", "%"+keyword+"%");
+		return query.uniqueResult();
+	}
+
+	@Override
+	public List<ApplyPost> getApplyPostsByRecruitmentId(int recruitmentId, int pageSize, int pageNumber) {
+		Session session = sessionFactory.getCurrentSession();
+		Query<ApplyPost> query = session.createQuery(""
+				+ "select a "
+				+ "from ApplyPost a "
+				+ "join fetch a.recruitment r "
+				+ "where r.id = :recruitmentId",ApplyPost.class);
+		query.setParameter("recruitmentId", recruitmentId);
+		query.setFirstResult((pageNumber-1)*pageSize);
+		query.setMaxResults(pageSize);
+		return query.getResultList();
+	}
+
+	@Override
+	public Long getTotalApplyPostByRecruitmentId(int recruitmentId) {
+		Session session = sessionFactory.getCurrentSession();
+		Query<Long> query = session.createQuery(""
+				+ "select count(a) "
+				+ "from ApplyPost a "
+				+ "join a.recruitment r "
+				+ "where r.id = :recruitmentId",Long.class);
+		query.setParameter("recruitmentId", recruitmentId);
+		return query.uniqueResult();
+	}
+
+	@Override
+	public Cv getCvByUserId(int userId) {
+		Session session = sessionFactory.getCurrentSession();
+		Query<Cv> query = session.createQuery(""
+				+ "select c "
+				+ "from Cv c "
+				+ "join c.user u "
+				+ "where u.id = :userId",Cv.class);
+		query.setParameter("userId", userId);
+		return query.uniqueResult();
+	}
+
+	@Override
+	public void addOrUpdateCv(Cv cv) {
+		sessionFactory.getCurrentSession().saveOrUpdate(cv);
 	}
 	
 

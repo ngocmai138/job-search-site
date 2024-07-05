@@ -1,19 +1,18 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<%@ taglib uri="http://java.sun.com/jstl/core_rt" prefix="c"%>
+ <%@ taglib uri="http://java.sun.com/jstl/core_rt" prefix="c"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="f"%>
 <%@ taglib uri="http://www.springframework.org/security/tags" prefix="s"%>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Company detail</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    
+    <title>Work CV</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
   <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700&display=swap" rel="stylesheet">
 
-  <!-- CSS -->
+   <!-- CSS -->
   <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/open-iconic-bootstrap.min.css">
   <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/animate.css">
   <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/owl.carousel.min.css">
@@ -52,6 +51,7 @@
   <script src="https://cdn.ckeditor.com/ckeditor5/29.0.0/classic/ckeditor.js"></script>
   <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 </head>
+<body>
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light"
 		id="ftco-navbar">
@@ -124,8 +124,8 @@
 						</li>
 						<li class="nav-item "><a href="#" onclick="document.getElementById('postRecruitment').submit();" class="nav-link">Đăng
 								tuyển</a>
-							<f:form id="postRecruitment" action="${pageContext.request.contextPath }/recruitment/post" method="get">
-								<input type="hidden" value="${pageContext.request.userPrincipal.name}" name="username">
+							<f:form id="postRecruitment" action="${pageContext.request.contextPath }/recruitment/post">
+								<input type="hidden" value="${pageContext.request.userPrincipal.name }" name="username">
 							</f:form></li>
 					</s:authorize>
 					<s:authorize access="isAnonymous()">
@@ -149,154 +149,189 @@
 			</div>
 		</div>
 	</nav>
-
-<!-- END nav -->
-
-
-
-<div class="hero-wrap hero-wrap-2" style="background-image: url('${pageContext.request.contextPath}/assets/images/bg_1.jpg');" data-stellar-background-ratio="0.5">
+<s:authorize access="hasRole('recruiter')">
+</s:authorize>
+<div class="hero-wrap hero-wrap-2" style="background-image: url('${pageContext.request.contextPath }/assets/images/bg_1.jpg');" data-stellar-background-ratio="0.5"">
     <div class="overlay"></div>
     <div class="container">
         <div class="row no-gutters slider-text align-items-end justify-content-start">
             <div class="col-md-12 text-center mb-5">
-                <p class="breadcrumbs mb-0"><span class="mr-3"><a href="index.html">Trang chủ <i class="ion-ios-arrow-forward"></i></a></span>Chi tiết <span></span></p>
-                <h1 class="mb-3 bread">Chi tiết công ty</h1>
+                <p class="breadcrumbs mb-0"><span class="mr-3"><a href="${pageContext.request.contextPath }/">Trang chủ <i class="ion-ios-arrow-forward"></i></a></span> Đăng bài<span></span></p>
+                <h1 class="mb-3 bread">Đăng bài tuyển dụng</h1>
             </div>
         </div>
     </div>
 </div>
+<c:if test="${not empty msg_success}">
+<div class="toast" data-delay="2500" style="position:fixed; top: 100PX; right: 10PX;z-index: 2000;width: 300px">
+    <script>
+        swal({
+            title: 'Đăng tuyển thành công!',
+            /* text: 'Redirecting...', */
+            icon: 'success',
+            timer: 3000,
+            buttons: true,
+            type: 'success'
+        })
+    </script>
+</div>
+</c:if>
 
-<section style="margin-top: 10px" class="site-section">
+<!--<div th:if="${msg_register_error}" class="toast" data-delay="2500" style="position:fixed; top: 100PX; right: 10PX;z-index: 2000;width: 300px">-->
+<!--    <div class="toast-header" style="background-color: red">-->
+
+<!--        <strong class="mr-auto" style="color: white">Thông báo</strong>-->
+<!--        <small style="color: white">Vừa xong</small>-->
+<!--        <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">-->
+<!--            <span aria-hidden="true" style="color: white">&times;</span>-->
+<!--        </button>-->
+<!--    </div>-->
+<!--    <div class="toast-body" >-->
+<!--        <p th:text="'❌ ' +${msg_register_error}"></p>-->
+<!--    </div>-->
+<!--    <script>-->
+<!--        $(document).ready(function(){-->
+<!--            $('.toast').toast('show');-->
+<!--        });-->
+<!--    </script>-->
+<!--</div>-->
+<!-- HOME -->
+<s:authorize access="hasRole('recruiter')">
+<section class="section-hero overlay inner-page bg-image" style="background-image: url('${pageContext.request.contextPath }/assets/images/hero_1.jpg');" id="home-section">
     <div class="container">
+        <div class="row">
+            <div class="col-md-7">
+                <h1 class="text-white font-weight-bold">Đăng bài</h1>
+                <div class="custom-breadcrumbs">
+                    <a href="${pageContext.request.contextPath }/">Trang chủ</a> <span class="mx-2 slash">/</span>
+                    <span class="text-white"><strong>Đăng bài tuyển dụng</strong></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</s:authorize>
+<s:authorize access="!hasRole('recruiter')">
+<div class="hero-wrap hero-wrap-2" style="background-image: url('${pageContext.request.contextPath} /assets/images/bg_1.jpg');" data-stellar-background-ratio="0.5">
+    <div class="overlay"></div>
+    <div class="container">
+        <div class="row no-gutters slider-text align-items-end justify-content-start">
+            <div class="col-md-12 text-center mb-5">
+
+                <h1 class="mb-3 bread">Không tìm thấy trang yêu cầu</h1>
+            </div>
+        </div>
+    </div>
+</div>
+</s:authorize>
+<s:authorize access="hasRole('recruiter')">
+<section class="site-section">
+    <div class="container">
+    <f:form modelAttribute="recruitment" action="${pageContext.request.contextPath}/recruitment/add" method="post">
         <div class="row align-items-center mb-5">
             <div class="col-lg-8 mb-4 mb-lg-0">
                 <div class="d-flex align-items-center">
-                    <div class="border p-2 d-inline-block mr-3 rounded">
-                        <img width="100" height="100" src="${pageContext.request.contextPath}/assets/images/${company.logo}" alt="Image">
-                    </div>
                     <div>
-                        <h2>${company.nameCompany}</h2>
-                        <div>
-                            <span class="icon-briefcase mr-2"></span><span class="ml-0 mr-2 mb-2">${company.email}</span>
-                            <span  class="icon-room mr-2"></span ><span class="m-2">${company.address}</span>
-
-                        </div>
-                        <input type="hidden" id="idCompany">
+                        <h2>Đăng bài</h2>
                     </div>
                 </div>
             </div>
             <div class="col-lg-4">
                 <div class="row">
-                    <div th:if="${session.user}" class="col-6">
-                        <a th:if="${session.user.role.id == 1}" onclick="follow()" class="btn btn-block btn-light btn-md"><span class="icon-heart-o mr-2 text-danger"></span>Theo dõi</a>
-                    </div>
-                    <div th:unless="${session.user}" class="col-6">
-                        <a  onclick="follow()" class="btn btn-block btn-light btn-md"><span class="icon-heart-o mr-2 text-danger"></span>Theo dõi</a>
+                    <div class="col-6">
+                        <a href="#" class="btn btn-block btn-light btn-md"></a>
                     </div>
                     <div class="col-6">
-
+                        <button type="submit" class="btn btn-block btn-primary btn-md">Đăng</button>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="row">
-            <div class="col-lg-8">
-                <div class="mb-5">
+        <div class="row mb-5">
+            <div class="col-lg-12">
+                <div class="p-4 p-md-5 border rounded">
+                    <h3 class="text-black mb-5 border-bottom pb-2">Chi tiết bài tuyển dụng</h3>
+					<input type="hidden" name="company.id" value="${company.id }">
+                    <div class="form-group">
+                        <label for="email">Tiêu đề</label>
+                        <input type="text" class="form-control" id="email" name="title"  required placeholder="Tiêu đề">
+                    </div>
+                    <div class="form-group">
+                        <label for="job-location">Mô tả công việc</label>
+                        <textarea  name="description"   class="form-control" id="editorN" placeholder="Mô tả"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="job-title">Kinh nghiệm</label>
+                        <input type="text" class="form-control" id="job-title" name="experience" placeholder="Kinh nghiệm">
+                    </div>
+                    <div class="form-group">
+                        <label for="job-title">Số người cần tuyển</label>
+                        <input type="number" class="form-control" id="job-title" name="quantity" placeholder="Số người cần tuyển">
+                    </div>
+                    <div class="form-group">
+                        <label for="job-location">Địa chỉ</label>
+                        <input type="text" class="form-control" id="job-location"  name="address" placeholder="Địa chỉ công ty">
+                    </div>
+                    <div class="form-group">
+                        <label for="job-location">Hạn ứng tuyển</label>
+                        <input type="date" class="form-control" id="job-location"  name="deadline" placeholder="Địa chỉ công ty">
+                    </div>
+                    <div class="form-group">
+                        <label for="job-location">Lương</label>
+                        <input type="text" class="form-control" id="job-location"  name="salary" placeholder="Mức lương">
+                    </div>
 
-                    <h3 class="h5 d-flex align-items-center mb-4 text-primary"><span class="icon-align-left mr-3"></span>Mô tả công việc</h3>
-                    <p>${company.description}</p>
-                </div>
+                    <div class="form-group">
+                        <label for="job-region">Loại công việc</label>
+                        <select class="form-control" name="type" aria-label="Default select example" required>
+                            <option selected>Chọn loại công việc</option>
+                            <option value="Part time">Part time</option>
+                            <option value="Full time">Full time</option>
+                            <option value="Freelancer">Freelancer</option>
+                        </select>
 
-            </div>
-            <div class="col-lg-4">
-                <div class="bg-light p-3 border rounded mb-4">
-                    <h3 class="text-primary  mt-3 h5 pl-3 mb-3 ">Tóm tắt công việc</h3>
-                    <ul class="list-unstyled pl-3 mb-0">
+                    </div>
+                    <div class="form-group">
+                        <label for="job-region">Danh mục công việc</label>
+                        <select class="form-control" name="category.id" aria-label="Default select example" required>
+                            <option selected>Chọn danh mục công việc</option>
+                            <c:forEach var="cat" items="${categories}">
+                                <option value="${cat.id}">${cat.name}</option>
+                            </c:forEach>
 
-                        <li class="mb-2"><strong class="text-black">Email công ty: </strong> <span>${company.email}</span></li>
-                        <li class="mb-2"><strong class="text-black">Số điện thoại: </strong> <span>${company.phoneNumber}</span></li>
-                        <li class="mb-2"><strong class="text-black">Địa chỉ: </strong> <span>${company.address}</span></li>
-                    </ul>
-                </div>
+                        </select>
 
-                <div class="bg-light p-3 border rounded">
-                    <h3 class="text-primary  mt-3 h5 pl-3 mb-3 ">Share</h3>
-                    <div class="px-3">
-                        <a href="#" class="pt-3 pb-3 pr-3 pl-0"><span class="icon-facebook"></span></a>
-                        <a href="#" class="pt-3 pb-3 pr-3 pl-0"><span class="icon-twitter"></span></a>
-                        <a href="#" class="pt-3 pb-3 pr-3 pl-0"><span class="icon-linkedin"></span></a>
-                        <a href="#" class="pt-3 pb-3 pr-3 pl-0"><span class="icon-pinterest"></span></a>
                     </div>
                 </div>
+            </div>
 
+        </div>
+        <div class="row align-items-center mb-5">
+
+            <div class="col-lg-4 ml-auto">
+                <div class="row">
+                    <div class="col-6">
+                        <a href="#" class="btn btn-block btn-light btn-md"></a>
+                    </div>
+                    <div class="col-6">
+                        <button type="submit" class="btn btn-block btn-primary btn-md">Đăng tuyển</button>
+                    </div>
+                </div>
             </div>
         </div>
+    </f:form>
     </div>
-    <script>
-        function follow(){
-            var name = "#idCompany";
-            var idCompany = $(name).val();
-            var formData = new FormData();
-            formData.append('idCompany', idCompany);
-            $.ajax(
-                {
-                    type: 'POST',
-                    url: '/user/follow-company/',
-                    contentType: false,
-                    processData: false,
-                    data: formData,
-                    success: function (data) {
-                        if(data == "false"){
-                            swal({
-                                title: 'Bạn cần phải đăng nhập!',
-                                /* text: 'Redirecting...', */
-                                icon: 'error',
-                                timer: 3000,
-                                buttons: true,
-                                type: 'error'
-                            })
-                        }else if(data == "true"){
-                            swal({
-                                title: 'Theo dõi thành công!',
-                                /* text: 'Redirecting...', */
-                                icon: 'success',
-                                timer: 3000,
-                                buttons: true,
-                                type: 'success'
-                            })
-                        }else{
-                            swal({
-                                title: 'Bạn đã theo dõi công ty này!',
-                                /* text: 'Redirecting...', */
-                                icon: 'error',
-                                timer: 3000,
-                                buttons: true,
-                                type: 'error'
-                            })
-                        }
-                    },
-                    error: function (err) {
-                        alert(err);
-                    }
-                }
-            )
-        }
-    </script>
 </section>
-
-<footer class="footer" class="ftco-footer ftco-bg-dark ftco-section">
-    <div class="container">
-  
-      <div class="row">
-        <div class="col-md-12 text-center">
-  
-          <p><!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-            Copyright &copy;<script>document.write(new Date().getFullYear());</script>  <i class="icon-heart text-danger" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">KhuongTM</a>
-            <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. --></p>
-        </div>
-      </div>
-    </div>
-  </footer>
+</s:authorize>
+<script>
+    ClassicEditor.create(document.querySelector('#editorN')).then(eidt => {
+        console.log("da" + eidt);
+    })
+        .catch(error => {
+            console.error(error);
+        });
+</script>
+<footer th:replace="public/fragments :: footer" class="ftco-footer ftco-bg-dark ftco-section">
 
 </footer>
 </body>

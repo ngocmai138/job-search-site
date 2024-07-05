@@ -102,8 +102,8 @@
 					<li class="nav-item" style="position: relative;"><a class="nav-link" href="#"> Hồ Sơ
 						</a>
 							<ul class="dropdown" >
+								<li><a href="${pageContext.request.contextPath}/showProfile?username=${pageContext.request.userPrincipal.name}">Hồ sơ</a></li>
 								<li><a href="/save-job/get-list">Công việc đã lưu</a></li>
-								<li><a href="${pageContext.request.contextPath}/user/showListPost">Danh sách bài đăng</a></li>
 								<li><a href="/user/get-list-apply">Công việc đã ứng
 										tuyển</a></li>
 								<li><a href="/user/get-list-company">Công ty đã theo
@@ -118,7 +118,7 @@
 							</ul></li>
 					</s:authorize>
 					<s:authorize access="hasRole('recruiter')">
-					<li class="nav-item"><a href="/" class="nav-link">Ứng cử
+					<li class="nav-item"><a href="${pageContext.request.contextPath }/listApplyPost?username=${pageContext.request.userPrincipal.name}" class="nav-link">Ứng cử
 							viên</a></li>
 						<li class="nav-item">
 							<a class="nav-link" href="#"> <s:authentication
@@ -154,15 +154,18 @@
 									</f:form></li>
 							</ul>
 						</li>
-						<li class="nav-item "><a href="/" class="nav-link">Đăng
-								tuyển</a></li>
+						<li class="nav-item "><a href="#" onclick="document.getElementById('postRecruitment').submit();" class="nav-link">Đăng
+								tuyển</a>
+							<f:form id="postRecruitment" action="${pageContext.request.contextPath }/recruitment/post" method="get">
+								<input type="hidden" value="${pageContext.request.userPrincipal.name}" name="username">
+							</f:form></li>
 					</s:authorize>
-					<c:if test="${principal == null }">
+					<s:authorize access="isAnonymous()">
 						<li class="nav-item cta cta-colored"><a
 							href="${pageContext.request.contextPath }/showLoginPage"
 							class="nav-link"> Đăng nhập</a></li>
-					</c:if>
-					<c:if test="${principal != null }">
+					</s:authorize>
+					<s:authorize access="isAuthenticated()">
 						<li class="nav-item">
 							<a class="nav-link" href="#"
 									onclick="document.getElementById('logoutForm').submit();">Đăng
@@ -173,7 +176,7 @@
 									<input type="hidden" name="_csrf" value="${_csrf.token }" />
 								</f:form>
 						</li>
-					</c:if>
+					</s:authorize>
 				</ul>
 			</div>
 		</div>
@@ -260,8 +263,7 @@
 											aria-controls="v-pills-1" aria-selected="true">Tìm công
 											việc</a> <a class="nav-link" id="v-pills-2-tab"
 											data-toggle="pill" href="#v-pills-2" role="tab"
-											aria-controls="v-pills-2" aria-selected="false">Tìm ứng
-											cử viên</a> <a class="nav-link" id="v-pills-3-tab"
+											aria-controls="v-pills-2" aria-selected="false">Tìm theo công ty</a> <a class="nav-link" id="v-pills-3-tab"
 											data-toggle="pill" href="#v-pills-3" role="tab"
 											aria-controls="v-pills-3" aria-selected="false">Tìm theo
 											địa điểm</a>
@@ -274,7 +276,7 @@
 
 										<div class="tab-pane fade show active" id="v-pills-1"
 											role="tabpanel" aria-labelledby="v-pills-nextgen-tab">
-											<form action="/recruitment/search" method="post"
+											<f:form action="${pageContext.request.contextPath}/recruitment/searchTitle" method="post"
 												class="search-job">
 												<div class="row no-gutters">
 
@@ -298,12 +300,12 @@
 														</div>
 													</div>
 												</div>
-											</form>
+											</f:form>
 										</div>
 
 										<div class="tab-pane fade" id="v-pills-2" role="tabpanel"
 											aria-labelledby="v-pills-performance-tab">
-											<form action="/user/search" method="post" class="search-job">
+											<f:form action="${pageContext.request.contextPath}/recruitment/searchCompanyName" method="post" class="search-job">
 												<div class="row no-gutters">
 
 													<div class="col-md-10 mr-md-2">
@@ -313,7 +315,7 @@
 																	<span class="icon-map-marker"></span>
 																</div>
 																<input type="text" name="keySearch" class="form-control"
-																	placeholder="Tìm kiếm ứng cử viên">
+																	placeholder="Tìm theo công ty">
 															</div>
 														</div>
 													</div>
@@ -326,11 +328,11 @@
 														</div>
 													</div>
 												</div>
-											</form>
+											</f:form>
 										</div>
 										<div class="tab-pane fade" id="v-pills-3" role="tabpanel"
 											aria-labelledby="v-pills-performance-tab">
-											<form action="/recruitment/searchaddress" method="post"
+											<f:form action="${pageContext.request.contextPath}/recruitment/searchAddress" method="post"
 												class="search-job">
 												<div class="row no-gutters">
 
@@ -354,7 +356,7 @@
 														</div>
 													</div>
 												</div>
-											</form>
+											</f:form>
 										</div>
 									</div>
 								</div>
@@ -365,7 +367,6 @@
 			</div>
 		</div>
 	</div>
-	<!-- ok 1 -->
 
 	<section class="ftco-section">
 		<div class="container">
@@ -394,7 +395,6 @@
 		</div>
 	</section>
 
-	<!-- ok 2 -->
 
 	<section class="ftco-section services-section">
 		<div class="container">
@@ -450,7 +450,6 @@
 			</div>
 		</div>
 	</section>
-	<!-- ok 3 -->
 
 	<section class="ftco-section bg-light">
 		<div class="container">
@@ -473,12 +472,12 @@
 										<div class="job-post-item-header align-items-center">
 											<span class="subadge">${recruitment.type}</span>
 											<h2 class="mr-3 text-black">
-												<a href="#">${recruitment.title}</a>
+												<a href="${pageContext.request.contextPath}/recruitment/detail?recruitmentId=${recruitment.id}">${recruitment.title}</a>
 											</h2>
 										</div>
 										<div class="job-post-item-body d-block d-md-flex">
 											<div class="mr-3">
-												<span class="icon-layers"></span> <a href="#">${recruitment.company.getNameCompany()}</a>
+												<span class="icon-layers"></span> <a href="${pageContext.request.contextPath}/recruitment/showDetailCompany?companyId=${recruitment.company.id}">${recruitment.company.nameCompany}</a>
 											</div>
 											<div>
 												<span class="icon-my_location"></span> <span>${recruitment.address}</span>

@@ -3,6 +3,7 @@ package com.asm2.controller;
 import java.security.Principal;
 import java.util.List;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,11 +12,14 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.asm2.entity.ApplyPost;
 import com.asm2.entity.Category;
 import com.asm2.entity.Company;
+import com.asm2.entity.Cv;
 import com.asm2.entity.Recruitment;
 import com.asm2.entity.Role;
 import com.asm2.entity.User;
@@ -79,14 +83,37 @@ public class JobSearchController {
 		}
 	}
 	
-	@GetMapping("/showProfile")
+	@Autowired
+	private ServletContext context;
+	
+	@RequestMapping("/showProfile")
 	public String profile(@RequestParam("username") String userName, Model model) {
 		Company company = jobService.getCompanyByUsername(userName);
 		User user = jobService.getUserByUsername(userName);
-		List<Role> roles = user.getRoles();
+		Cv cv = jobService.getCvByUserId(user.getId());
+		System.out.println("Đường dẫn tương đối: "+context.getRealPath("src/main/resources/uploads/"));
 		model.addAttribute("company",company);
 		model.addAttribute("user",user);
-		model.addAttribute("roles",roles);
+		model.addAttribute("Cv",cv);
 		return "profile";
+	}
+	@RequestMapping("/listApplyPost")
+	public String listApplyPost(@RequestParam("username") String userName,
+									@RequestParam(name="pageNumber", defaultValue = "1") int pageNumber,
+									@RequestParam(name="pageSize", defaultValue = "5") int pageSize,
+									Model model) {
+		User user = jobService.getUserByUsername(userName);
+		List<ApplyPost> applyPosts = jobService.getApplyPostsByUserId(user.getId(), pageSize, pageNumber);
+		Long totalApplyPost = jobService.getTotalApplyPostByUserId(user.getId());
+		int totalPages = (int) Math.ceil((double)totalApplyPost/pageSize);
+		int pagePre = pageNumber - 1;
+		int pageNext = pageNumber +1;
+		model.addAttribute("applyPosts",applyPosts);
+		model.addAttribute("totalPages",totalPages);
+		model.addAttribute("pagePre",pagePre);
+		model.addAttribute("pageNext",pageNext);
+		model.addAttribute("pageNumber",pageNumber);
+		model.addAttribute("pageSize",pageSize);
+		return "list-user";
 	}
 }

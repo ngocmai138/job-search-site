@@ -63,9 +63,7 @@ public class User {
 							CascadeType.PERSIST, CascadeType.REFRESH})
 	@JoinColumn(name="user_id")
 	private List<Company> companies;
-	@ManyToMany(fetch = FetchType.LAZY,
-				cascade = {CascadeType.DETACH, CascadeType.MERGE,
-							CascadeType.PERSIST, CascadeType.REFRESH})
+	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "save_job",
 				joinColumns = @JoinColumn(name="user_id"),
 				inverseJoinColumns = @JoinColumn(name="recruitment_id"))	
@@ -77,10 +75,7 @@ public class User {
 				joinColumns = @JoinColumn(name="user_id"),
 				inverseJoinColumns = @JoinColumn(name="company_id"))
 	private List<Company> followCompanies;
-	@OneToMany(fetch = FetchType.LAZY,
-				cascade = {CascadeType.DETACH, CascadeType.MERGE,
-							CascadeType.PERSIST, CascadeType.REFRESH})
-	@JoinColumn(name="user_id")
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
 	private List<ApplyPost> applyPosts;
 	
 	public User() {
