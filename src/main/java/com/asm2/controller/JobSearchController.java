@@ -83,15 +83,11 @@ public class JobSearchController {
 		}
 	}
 	
-	@Autowired
-	private ServletContext context;
-	
 	@RequestMapping("/showProfile")
 	public String profile(@RequestParam("username") String userName, Model model) {
 		Company company = jobService.getCompanyByUsername(userName);
 		User user = jobService.getUserByUsername(userName);
 		Cv cv = jobService.getCvByUserId(user.getId());
-		System.out.println("Đường dẫn tương đối: "+context.getRealPath("src/main/resources/uploads/"));
 		model.addAttribute("company",company);
 		model.addAttribute("user",user);
 		model.addAttribute("Cv",cv);

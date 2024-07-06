@@ -1,13 +1,16 @@
 package com.asm2.controller;
 
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -30,10 +33,9 @@ import com.asm2.service.JobService;
 @Controller
 @RequestMapping("/user")
 public class UserController {
-	private static String UPLOADED_FOLDER = "src/main/resources/uploads/";
-//	private static String UPLOADED_FOLDER = "F:/Downloads/Github projects/job-search-site/src/main/resources/uploads/";
-	
-	
+	private static String UPLOADED_FOLDER = "/WEB-INF/classes/uploads/";
+	@Value("${upload.dir}")
+	private String uploadDir;
 	
 	@RequestMapping("/uploadCv")
 	public String uploadCv(@RequestParam("file") MultipartFile file,
@@ -47,7 +49,11 @@ public class UserController {
 		}
 		try {
 			byte[] bytes = file.getBytes();
-			Path path = Paths.get(UPLOADED_FOLDER+file.getOriginalFilename());
+			Path currentPath = Paths.get(getClass().getProtectionDomain().getCodeSource().getLocation().toURI()).getParent();
+			Path uploadDirPath = currentPath.resolve(uploadDir).normalize();
+			System.out.println("absoluteUploadDir: "+uploadDirPath.toString());
+			Path path = uploadDirPath.resolve(fileName);
+			System.out.println("Đường dẫn tuyệt đối: "+path);
 			Files.write(path, bytes);
 			
 			Cv existingCv = jobService.getCvByUserId(userId);
