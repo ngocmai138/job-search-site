@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -33,9 +34,12 @@ import com.asm2.service.JobService;
 @Controller
 @RequestMapping("/user")
 public class UserController {
-	private static String UPLOADED_FOLDER = "/WEB-INF/classes/uploads/";
-	@Value("${upload.dir}")
-	private String uploadDir;
+	
+	@Autowired
+	private JobService jobService;
+	@Autowired
+    private ServletContext servletContext;
+	
 	
 	@RequestMapping("/uploadCv")
 	public String uploadCv(@RequestParam("file") MultipartFile file,
@@ -46,14 +50,16 @@ public class UserController {
 		String fileName = user.getUserName()+".pdf";
 		if(file.isEmpty()) {
 			redirectAttributes.addFlashAttribute("message","Please select a file to upload");
+			return "redirect:/uploadStatus";
 		}
 		try {
 			byte[] bytes = file.getBytes();
-			Path currentPath = Paths.get(getClass().getProtectionDomain().getCodeSource().getLocation().toURI()).getParent();
-			Path uploadDirPath = currentPath.resolve(uploadDir).normalize();
-			System.out.println("absoluteUploadDir: "+uploadDirPath.toString());
-			Path path = uploadDirPath.resolve(fileName);
-			System.out.println("Đường dẫn tuyệt đối: "+path);
+			String uploadDir = servletContext.getRealPath("/uploads");
+			File uploadDirFile = new File(uploadDir);
+		 
+			if(!uploadDirFile.exists()) uploadDirFile.mkdirs();
+			Path path = Paths.get(uploadDir, fileName);
+			System.out.println("Tệp được lưu vào: "+path.toAbsolutePath());
 			Files.write(path, bytes);
 			
 			Cv existingCv = jobService.getCvByUserId(userId);
@@ -110,9 +116,6 @@ public class UserController {
 //		return fileName;	
 //	}
 	
-	
-	@Autowired
-	private JobService jobService;
 	@RequestMapping("/updateProfile")
 	public String updateProfile(@ModelAttribute("user") User user,
 								@RequestParam(value = "companyId", required = false) Integer companyId,
