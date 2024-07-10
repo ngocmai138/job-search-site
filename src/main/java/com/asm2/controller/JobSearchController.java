@@ -99,8 +99,8 @@ public class JobSearchController {
 									@RequestParam(name="pageSize", defaultValue = "5") int pageSize,
 									Model model) {
 		User user = jobService.getUserByUsername(userName);
-		List<ApplyPost> applyPosts = jobService.getApplyPostsByUserId(user.getId(), pageSize, pageNumber);
-		Long totalApplyPost = jobService.getTotalApplyPostByUserId(user.getId());
+		List<ApplyPost> applyPosts = jobService.getApplyPostsByRecruiterId(user.getId(), pageSize, pageNumber);
+		Long totalApplyPost = jobService.getTotalApplyPostByRecruiterId(user.getId());
 		int totalPages = (int) Math.ceil((double)totalApplyPost/pageSize);
 		int pagePre = pageNumber - 1;
 		int pageNext = pageNumber +1;

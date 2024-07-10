@@ -152,13 +152,13 @@ public class JobServiceImpl implements JobService{
 	}
 
 	@Override
-	public List<ApplyPost> getApplyPostsByUserId(int userId, int pageSize, int pageNumber) {
-		return jobDAO.getApplyPostsByUserId(userId, pageSize, pageNumber);
+	public List<ApplyPost> getApplyPostsByRecruiterId(int userId, int pageSize, int pageNumber) {
+		return jobDAO.getApplyPostsByRecruiterId(userId, pageSize, pageNumber);
 	}
 
 	@Override
-	public Long getTotalApplyPostByUserId(int userId) {
-		return jobDAO.getTotalApplyPostByUserId(userId);
+	public Long getTotalApplyPostByRecruiterId(int userId) {
+		return jobDAO.getTotalApplyPostByRecruiterId(userId);
 	}
 
 	@Override
@@ -210,6 +210,11 @@ public class JobServiceImpl implements JobService{
 	public void addOrUpdateCv(Cv cv) {
 		jobDAO.addOrUpdateCv(cv);
 		
+	}
+
+	@Override
+	public void addOrUpdateApplyPost(ApplyPost applyPost) {
+		jobDAO.addOrUpdateApplyPost(applyPost);
 	}
 
 }

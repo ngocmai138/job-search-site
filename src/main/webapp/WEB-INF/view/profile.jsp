@@ -125,8 +125,8 @@
 						<li class="nav-item"><a
 							href="${pageContext.request.contextPath }/listApplyPost?username=${pageContext.request.userPrincipal.name}"
 							class="nav-link">Ứng cử viên</a></li>
-						<li class="nav-item"><a class="nav-link" href="#"> <s:authentication
-									property="principal.username" />
+						<li class="nav-item"><a class="nav-link" href="#"> 
+						<s:authentication property="principal.username" />
 						</a>
 							<ul class="dropdown">
 								<li><a href="#"
@@ -263,7 +263,7 @@
 			</c:if>
 		</div>
 	</c:if>
-	<c:if test="${user.status == 1}">>
+	<c:if test="${user.status == 1}">
 		<s:authorize access="hasRole('candidate')">
 			<section class="site-section" style="margin-top: 10px">
 				<div class="container">
@@ -615,10 +615,10 @@
             if (window.FormData !== undefined) {
                 var fileUpload = $('#fileUpload').get(0);
                 var files = fileUpload.files;
-                var email = $("#email").val();
+                var userId = $("#userId").val();
                 var formData = new FormData();
                 formData.append('file', files[0]);
-                formData.append('email', email);
+                formData.append('userId', userId);
                 if(files[0] == null){
                     // document.getElementById("change").style.backgroundColor = 'red';
                     // $('#text').val(" ❌ Cập nhật ảnh thất bại");
@@ -627,13 +627,13 @@
                     $.ajax(
                         {
                             type: 'POST',
-                            url: '/user/upload/',
+                            url: window.location.origin + '/job-search-site/user/uploadImage',
                             contentType: false,
                             processData: false,
                             data: formData,
-                            success: function (urlImage) {
-                                console.log(urlImage)
-                                if(urlImage == "Error"){
+                            success: function (response) {
+                                console.log("Success: "+response)
+                                if(response === "Error"){
                                     document.getElementById("change").style.backgroundColor = 'red';
                                     swal({
                                         title: 'Cập nhật ảnh đại diện thất bại!',
@@ -645,7 +645,7 @@
                                     })
                                     $("#divImage").css("display","block")
                                 }else{
-                                    $('#avatar').attr('src', urlImage)
+                                    $('#avatar').attr('src', response)
                                     swal({
                                         title: 'Cập nhật ảnh đại diện thành công!',
                                         /* text: 'Redirecting...', */
@@ -737,9 +737,8 @@
                 var fileUpload = $('#fileUpload1').get(0);
                 var files = fileUpload.files;
                 var formData = new FormData();
-                formData.append('file', files[0]);
                 var userId = $('#userId').val();
-                console.log("UserId: ", userId);
+                formData.append('file', files[0]);
                 formData.append('userId',userId);
                 if(files[0] == null){
                 	console.log("No file selected");
@@ -747,7 +746,6 @@
                     // $('#text').val(" ❌ Cập nhật ảnh thất bại");
                     $(".toast").toast("show");
                 } else {
-                    console.log("Sending ajax request");
                     $.ajax(
                         {
                             type: 'POST',

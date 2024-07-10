@@ -76,7 +76,7 @@
 <script
 	src="${pageContext.request.contextPath}/assets/js/scrollax.min.js"></script>
 <script
-	src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&sensor=false"></script>
+	src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s"></script>
 <script src="${pageContext.request.contextPath}/assets/js/google-map.js"></script>
 <script src="${pageContext.request.contextPath}/assets/js/main.js"></script>
 <script
@@ -484,31 +484,29 @@
 											</div>
 										</div>
 									</div>
-									<input type="hidden" id="${'idRe'}+${recruitment.id}"
+									<input type="hidden" id="idRe${recruitment.id}"
 										value="${recruitment.id}">
-									<c:if test="${session.user}">
+									<input type="hidden" id="userName${recruitment.id}"
+										value="${pageContext.request.userPrincipal.name}">
+									<s:authorize access="isAuthenticated() and hasRole('candidate')">
 										<div
 											class="one-forth ml-auto d-flex align-items-center mt-4 md-md-0">
 											<div>
-												<c:if test="${session.user.role.id == 1}">
-													<a onclick="'save(' +${recruitment.id}+ ')'"
+													<a onclick="save(${recruitment.id})"
 														class="icon text-center d-flex justify-content-center align-items-center icon mr-2">
 														<span class="icon-heart"></span>
 													</a>
-												</c:if>
 											</div>
-											<c:if test="${session.user.role.id == 1}">
 												<a data-toggle="modal"
 													data-target="#exampleModal${recruitment.id}"
 													class="btn btn-primary py-2">Apply Job</a>
-											</c:if>
 										</div>
-									</c:if>
-									<c:if test="${!session.user}">
+									</s:authorize>
+									<s:authorize access="isAnonymous()">
 										<div
 											class="one-forth ml-auto d-flex align-items-center mt-4 md-md-0">
 											<div>
-												<a onclick="'save(' +${recruitment.id}+ ')'"
+												<a onclick="save(${recruitment.id})"
 													class="icon text-center d-flex justify-content-center align-items-center icon mr-2">
 													<span class="icon-heart"></span>
 												</a>
@@ -517,7 +515,7 @@
 												data-target="#exampleModal${recruitment.id}"
 												class="btn btn-primary py-2">Apply Job</a>
 										</div>
-									</c:if>
+									</s:authorize>
 								</div>
 							</div>
 							<!-- Modal -->
@@ -535,37 +533,37 @@
 												<span aria-hidden="true">&times;</span>
 											</button>
 										</div>
-										<form method="post" action="/user/apply-job">
+										<form method="post" action="${pageContext.request.contextPath}/user/applyJob">
 											<div class="modal-body">
 												<div class="row">
 													<div class="col-12">
-														<select id="${'choose'}+${recruitment.id}"
-															onchange="'choosed(' +${recruitment.id}+ ')'"
+														<select id="choose${recruitment.id}"
+															onchange="choosed(${recruitment.id})"
 															class="form-control" aria-label="Default select example">
 															<option selected>Chọn phương thức nộp</option>
 															<option value="1">Dùng cv đã cập nhật</option>
 															<option value="2">Nộp cv mới</option>
 														</select>
 													</div>
-													<div id="${'loai1'}+${recruitment.id}"
+													<div id="loai1${recruitment.id}"
 														style="display: none" class="col-12">
 														<label for="fileUpload" class="col-form-label">Giới
 															thiệu:</label>
 														<textarea rows="10" cols="3" class="form-control"
-															id="${'text'}+${recruitment.id}">
+															id="text${recruitment.id}">
 
                                                     </textarea>
 													</div>
-													<div id="${'loai2'}+${recruitment.id}"
+													<div id="loai2${recruitment.id}"
 														style="display: none" class="col-12">
 
 														<label for="fileUpload" class="col-form-label">Chọn
 															cv:</label> <input type="file" class="form-control"
-															id="${'fileUpload'}+${recruitment.id}" name="file"
+															id="fileUpload${recruitment.id}" name="file"
 															required> <label for="fileUpload"
 															class="col-form-label">Giới thiệu:</label>
 														<textarea rows="10" cols="3" class="form-control"
-															id="${'text'}+${recruitment.id}">
+															id="text2${recruitment.id}">
 
                                                     </textarea>
 													</div>
@@ -574,13 +572,13 @@
 												<div class="modal-footer">
 													<button type="button" class="btn btn-secondary"
 														data-dismiss="modal">Đóng</button>
-													<button type="button" id="${'button1'}+${recruitment.id}"
+													<button type="button" id="button1${recruitment.id}"
 														style="display: none"
-														onclick="'apply1(' +${recruitment.id}+ ')'"
+														onclick="apply1(${recruitment.id})"
 														class="btn btn-primary">Nộp</button>
-													<button type="button" id="${'button2'}+${recruitment.id}"
+													<button type="button" id="button2${recruitment.id}"
 														style="display: none"
-														onclick="'apply(' +${recruitment.id}+ ')'"
+														onclick="apply(${recruitment.id})"
 														class="btn btn-primary">Nộp</button>
 												</div>
 											</div>
@@ -634,7 +632,7 @@
 			formData.append('idRe', idRe);
 			$.ajax({
 				type : 'POST',
-				url : '/save-job/save/',
+				url : window.location.origin + '/job-search-site/user/save-job/',
 				contentType : false,
 				processData : false,
 				data : formData,
@@ -699,15 +697,21 @@
 			var name = "#idRe" + id;
 			var nameModal = "#exampleModal" + id;
 			var nameFile = "#fileUpload" + id;
-			var nameText = "#text" + id;
+			var nameText = "#text2" + id;
+			var user = "#userName"+id;
 			var idRe = $(name).val();
 			var textvalue = $(nameText).val();
 			var fileUpload = $(nameFile).get(0);
+			var userName = $(user).val();
 			var files = fileUpload.files;
 			var formData = new FormData();
 			formData.append('file', files[0]);
 			formData.append('idRe', idRe);
 			formData.append('text', textvalue);
+			formData.append('userName', userName);
+			formData.append('useExistingCV',false);
+			console.log('userName: '+userName);
+			console.log('text: '+textvalue);
 			if (files[0] == null) {
 				swal({
 					title : 'Bạn cần phải chọn cv!',
@@ -720,7 +724,7 @@
 			} else {
 				$.ajax({
 					type : 'POST',
-					url : '/user/apply-job/',
+					url : window.location.origin + '/job-search-site/user/applyJob/',
 					contentType : false,
 					processData : false,
 					data : formData,
@@ -770,14 +774,20 @@
 			var nameModal = "#exampleModal" + id;
 			var nameFile = "#fileUpload" + id;
 			var nameText = "#text" + id;
+			var user = "#userName"+id;
 			var idRe = $(name).val();
 			var textvalue = $(nameText).val();
+			var userName =  $(user).val();
 			var formData = new FormData();
 			formData.append('idRe', idRe);
 			formData.append('text', textvalue);
+			formData.append('userName', userName);
+			formData.append('useExistingCV',true);
+			console.log('userName: '+userName);
+			console.log('text: '+textvalue);
 			$.ajax({
 				type : 'POST',
-				url : '/user/apply-job1/',
+				url :window.location.origin + '/job-search-site/user/applyJob/',
 				contentType : false,
 				processData : false,
 				data : formData,

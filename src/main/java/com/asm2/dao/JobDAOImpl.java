@@ -241,7 +241,7 @@ public class JobDAOImpl implements JobDAO{
 	}
 
 	@Override
-	public List<ApplyPost> getApplyPostsByUserId(int userId, int pageSize, int pageNumber) {
+	public List<ApplyPost> getApplyPostsByRecruiterId(int userId, int pageSize, int pageNumber) {
 		Session session = sessionFactory.getCurrentSession();
 		Query<ApplyPost> query = session.createQuery(""
 				+ "select a "
@@ -257,7 +257,7 @@ public class JobDAOImpl implements JobDAO{
 	}
 
 	@Override
-	public Long getTotalApplyPostByUserId(int userId) {
+	public Long getTotalApplyPostByRecruiterId(int userId) {
 		Session session = sessionFactory.getCurrentSession();
 		Query<Long> query = session.createQuery(""
 				+ "select count(r) "
@@ -381,6 +381,11 @@ public class JobDAOImpl implements JobDAO{
 	@Override
 	public void addOrUpdateCv(Cv cv) {
 		sessionFactory.getCurrentSession().saveOrUpdate(cv);
+	}
+
+	@Override
+	public void addOrUpdateApplyPost(ApplyPost applyPost) {
+		sessionFactory.getCurrentSession().saveOrUpdate(applyPost);
 	}
 	
 

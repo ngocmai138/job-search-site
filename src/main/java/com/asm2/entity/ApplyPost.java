@@ -11,6 +11,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.PrePersist;
 import javax.persistence.Table;
 
 @Entity
@@ -28,8 +29,6 @@ public class ApplyPost {
 	private String text;
 	@Column(name="name_cv")
 	private String nameCv;
-	@Column(name="image")
-	private String image;
 	@JoinColumn(name="recruitment_id")
 	@ManyToOne(fetch = FetchType.EAGER)
 	private Recruitment recruitment;
@@ -38,6 +37,11 @@ public class ApplyPost {
 	private User user;
 	
 	public ApplyPost() {}
+	@PrePersist
+	public void onCreate() {
+		this.createdAt = new Date(System.currentTimeMillis());
+		this.status = 1;
+	}
 	
 	public int getId() {
 		return id;
@@ -80,13 +84,6 @@ public class ApplyPost {
 	}
 	public void setUser(User user) {
 		this.user = user;
-	}
-	public String getImage() {
-		return image;
-	}
-
-	public void setImage(String image) {
-		this.image = image;
 	}
 
 	public ApplyPost(Date createdAt, int status, String text, String nameCv, Recruitment recruitment, User user) {

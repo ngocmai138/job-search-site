@@ -4,6 +4,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.Principal;
 import java.util.List;
 
 import javax.servlet.ServletContext;
@@ -19,12 +20,14 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.asm2.entity.ApplyPost;
 import com.asm2.entity.Company;
 import com.asm2.entity.Cv;
 import com.asm2.entity.Recruitment;
@@ -41,63 +44,26 @@ public class UserController {
     private ServletContext servletContext;
 	
 	
-	@RequestMapping("/uploadCv")
-	public String uploadCv(@RequestParam("file") MultipartFile file,
-							@RequestParam("userId") int userId,
-							HttpServletRequest request,
-							RedirectAttributes redirectAttributes) {
-		User user = jobService.getUserById(userId);
-		String fileName = user.getUserName()+".pdf";
-		if(file.isEmpty()) {
-			redirectAttributes.addFlashAttribute("message","Please select a file to upload");
-			return "redirect:/uploadStatus";
-		}
-		try {
-			byte[] bytes = file.getBytes();
-			String uploadDir = servletContext.getRealPath("/uploads");
-			File uploadDirFile = new File(uploadDir);
-		 
-			if(!uploadDirFile.exists()) uploadDirFile.mkdirs();
-			Path path = Paths.get(uploadDir, fileName);
-			System.out.println("Tệp được lưu vào: "+path.toAbsolutePath());
-			Files.write(path, bytes);
-			
-			Cv existingCv = jobService.getCvByUserId(userId);
-			if(existingCv!=null) {
-				existingCv.setFileName(fileName);
-				jobService.addOrUpdateCv(existingCv);
-			}else {
-				Cv cv = new Cv();
-				cv.setFileName(fileName);
-				cv.setUser(user);
-				jobService.addOrUpdateCv(cv);
-			}
-		}catch (Exception e) {
-			e.printStackTrace();
-		}
-		String referer = request.getHeader("Referer");
-		redirectAttributes.addFlashAttribute("message","You successfully uploaded CV");
-		return "redirect:"+referer;
-	}
-	
-//	@PostMapping("/uploadCv")
-//	public @ResponseBody String uploadCv(@RequestParam("file") MultipartFile file,
+//	@RequestMapping("/uploadCv")
+//	public String uploadCv(@RequestParam("file") MultipartFile file,
 //							@RequestParam("userId") int userId,
+//							HttpServletRequest request,
 //							RedirectAttributes redirectAttributes) {
-//		System.out.println("UUUUUUUUUpppload");
 //		User user = jobService.getUserById(userId);
 //		String fileName = user.getUserName()+".pdf";
 //		if(file.isEmpty()) {
-//			System.out.println("No file selected.");
 //			redirectAttributes.addFlashAttribute("message","Please select a file to upload");
-//			return "No file selected.";
+//			return "redirect:/uploadStatus";
 //		}
 //		try {
 //			byte[] bytes = file.getBytes();
-//			Path path = Paths.get(UPLOADED_FOLDER+fileName);
-//			Files.createDirectories(path.getParent());
+//			String uploadDir = servletContext.getRealPath("/uploads");
+//			File uploadDirFile = new File(uploadDir);
+//		 
+//			if(!uploadDirFile.exists()) uploadDirFile.mkdirs();
+//			Path path = Paths.get(uploadDir, fileName);
+//			System.out.println("Tệp được lưu vào: "+path.toAbsolutePath());
 //			Files.write(path, bytes);
-//			System.out.println("File saved: " + path.toString());
 //			
 //			Cv existingCv = jobService.getCvByUserId(userId);
 //			if(existingCv!=null) {
@@ -111,10 +77,71 @@ public class UserController {
 //			}
 //		}catch (Exception e) {
 //			e.printStackTrace();
-//			return "Error uploading file";
 //		}
-//		return fileName;	
+//		String referer = request.getHeader("Referer");
+//		redirectAttributes.addFlashAttribute("message","You successfully uploaded CV");
+//		return "redirect:"+referer;
 //	}
+	
+	@RequestMapping("/uploadCv")
+	public @ResponseBody String uploadCv(@RequestParam("file") MultipartFile file,
+							@RequestParam("userId") int userId) {
+		User user = jobService.getUserById(userId);
+		String fileName = user.getUserName()+"_cv.pdf";
+		if(file.isEmpty()) {
+			System.out.println("No file selected.");
+			return "No file selected.";
+		}
+		try {
+			byte[] bytes = file.getBytes();
+			String uploadDir = servletContext.getRealPath("/uploads");
+			File uploadDirFile = new File(uploadDir);
+			if(!uploadDirFile.exists()) uploadDirFile.mkdirs();
+			Path path = Paths.get(uploadDir, fileName);
+			Files.write(path, bytes);
+			System.out.println("File saved: " + path.toString());
+			
+			Cv existingCv = jobService.getCvByUserId(userId);
+			if(existingCv!=null) {
+				existingCv.setFileName(fileName);
+				jobService.addOrUpdateCv(existingCv);
+			}else {
+				Cv cv = new Cv();
+				cv.setFileName(fileName);
+				cv.setUser(user);
+				jobService.addOrUpdateCv(cv);
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+			return "Error uploading file";
+		}
+		return fileName;	
+	}
+	
+	@RequestMapping("/uploadImage")
+	public @ResponseBody String uploadImage(@RequestParam("file") MultipartFile file,
+												@RequestParam("userId") int userId) {
+		User user = jobService.getUserById(userId);
+		if(user == null) return "user not found";
+		String fileName = "person_"+user.getId()+".jpg";
+		
+		if(file.isEmpty()) return "Error";
+		try {
+			byte[] bytes = file.getBytes();
+			String uploadDir = servletContext.getRealPath("/uploads");
+			File uploadDirFile = new File(uploadDir);
+			if(!uploadDirFile.exists()) uploadDirFile.mkdirs();
+			Path path = Paths.get(uploadDir, fileName);
+			Files.write(path, bytes);
+			System.out.println("Photo saved: "+path);
+			user.setImage(fileName);
+			jobService.addOrUpdateUser(user);
+		}catch (Exception e) {
+			e.printStackTrace();
+			return "Error";
+		}
+		return fileName;
+	}
 	
 	@RequestMapping("/updateProfile")
 	public String updateProfile(@ModelAttribute("user") User user,
@@ -190,6 +217,46 @@ public class UserController {
 							HttpServletRequest request) {
 		String referer = request.getHeader("Referer");
 		return "redirect:"+referer;
+	}
+	@RequestMapping("/applyJob")
+	public @ResponseBody String applyJob(@RequestParam("userName") String userName,
+							@RequestParam("idRe") int recruitmentId,
+							@RequestParam("text") String text,
+							@RequestParam("useExistingCV") boolean useExistingCV,
+							@RequestParam(value="file", required = false) MultipartFile file,
+							Principal principal) {
+		if(principal == null) return "false";
+		User user = jobService.getUserByUsername(userName);
+		Recruitment recruitment = jobService.getRecruitment(recruitmentId);
+		ApplyPost applyPost = new ApplyPost();
+		applyPost.setUser(user);
+		applyPost.setRecruitment(recruitment);
+		applyPost.setText(text);
+		if(useExistingCV) {
+			String existingCV = user.getCv().getFileName();
+			applyPost.setNameCv(existingCV);
+		}else {
+			if(file!=null && !file.isEmpty()) {
+				String fileName = user.getUserName()+"_cv.pdf";
+				try {
+					String uploadDir = servletContext.getRealPath("/uploads");
+					Path path = Paths.get(uploadDir, fileName);
+					Files.write(path, file.getBytes());
+					applyPost.setNameCv(fileName);
+					System.out.println("File saved: "+path);
+				} catch (Exception e) {
+					e.printStackTrace();
+					return "false";
+				}
+			}
+		}
+		jobService.addOrUpdateApplyPost(applyPost);
+		return "true";
+	}
+	
+	@RequestMapping("/saveJob")
+	public String saveJob(HttpServletRequest request) {
+		return "redirect:"+request.getHeader("Referer");
 	}
 	
 }

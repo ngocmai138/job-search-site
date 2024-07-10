@@ -20,7 +20,7 @@ public interface JobService {
 	public List<Category> getTopCategories();
 	public List<Recruitment> getRecruitments(int userId);
 	public List<Recruitment> getRecruitments(int userId, int pageSize, int pageNumber);
-	public List<ApplyPost> getApplyPostsByUserId(int userId, int pageSize, int pageNumber);
+	public List<ApplyPost> getApplyPostsByRecruiterId(int recruiterId, int pageSize, int pageNumber);
 	public List<ApplyPost> getApplyPostsByRecruitmentId(int recruitmentId, int pageSize, int pageNumber);
 	public List<Recruitment> searchRecruitmentsByTitle(String keyword, int pageSize, int pageNumber);
 	public List<Recruitment> searchRecruitmentByCompany(String keyword, int pageSize, int pageNumber);
@@ -29,7 +29,7 @@ public interface JobService {
 	public Long getTotalRecruitment();
 	public Long getTotalUser();
 	public Long getTotalRecruitment(int userId);
-	public Long getTotalApplyPostByUserId(int userId);
+	public Long getTotalApplyPostByRecruiterId(int recruiterId);
 	public Long getTotalApplyPostByRecruitmentId(int recruitmentId);
 	public Long getTotalSearchRecruitmentsByTitle(String keyword);
 	public Long getTotalSearchRecruitmentsByCompany(String keyword);
@@ -49,4 +49,5 @@ public interface JobService {
 	public void deleteRecruitment(int recruitmentId);
 	public void addOrUpdateRecruitment(Recruitment recruitment);
 	public void addOrUpdateCv(Cv cv);
+	public void addOrUpdateApplyPost(ApplyPost applyPost);
 }
