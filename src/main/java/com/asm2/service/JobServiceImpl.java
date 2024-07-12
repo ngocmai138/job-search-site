@@ -217,4 +217,9 @@ public class JobServiceImpl implements JobService{
 		jobDAO.addOrUpdateApplyPost(applyPost);
 	}
 
+	@Override
+	public User getUserByEmail(String email) {
+		return jobDAO.getUserByEmail(email);
+	}
+
 }

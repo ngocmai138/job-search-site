@@ -387,6 +387,17 @@ public class JobDAOImpl implements JobDAO{
 	public void addOrUpdateApplyPost(ApplyPost applyPost) {
 		sessionFactory.getCurrentSession().saveOrUpdate(applyPost);
 	}
+
+	@Override
+	public User getUserByEmail(String email) {
+		Session session = sessionFactory.getCurrentSession();
+		Query<User> query = session.createQuery(""
+				+ "from User "
+				+ "where email = :email",
+				User.class);
+		query.setParameter("email", email);
+		return query.uniqueResult();
+	}
 	
 
 }

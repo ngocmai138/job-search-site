@@ -39,6 +39,7 @@ public interface JobService {
 	public Company getCompanyById(int companyId);
 	public User getUserByUsername(String userName);
 	public User getUserById(int userId);
+	public User getUserByEmail(String email);
 	public Cv getCv(int cvId);
 	public Cv getCvByUserId(int userId);
 	public Recruitment getRecruitment(int recruitmentId);

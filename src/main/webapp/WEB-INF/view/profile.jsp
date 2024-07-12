@@ -85,7 +85,6 @@
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 </head>
 <body>
-<body>
 	<nav
 		class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light"
 		id="ftco-navbar">
@@ -232,7 +231,7 @@
 					lòng bấm nút Nhận email xác thực dưới đây.
 				</p>
 				<div class="row form-group">
-					<form action="/user/confirm-account" method="post"
+					<form action="/user/confirmAccount" method="post"
 						class="col-md-12">
 						<input type="hidden" value="${user.email}" name="email"
 							class="btn px-4 btn-primary text-white"> <input

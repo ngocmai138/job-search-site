@@ -20,7 +20,6 @@ import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 public class JobSearchSecurityConfig {
 	private DataSource securityDataSource;
 	private JobAuthenticationSuccessHandler authenticationSuccessHandler;
-	private Logger logger = LoggerFactory.getLogger(JobSearchSecurityConfig.class);
 
 	@Autowired
 	public JobSearchSecurityConfig(DataSource securityDataSource, JobAuthenticationSuccessHandler authenticationSuccessHandler) {

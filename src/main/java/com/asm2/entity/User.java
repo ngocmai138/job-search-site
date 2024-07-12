@@ -79,7 +79,7 @@ public class User {
 	private List<ApplyPost> applyPosts;
 	
 	public User() {
-		this.status=1;
+		this.status=0;
 		this.isActive=true;
 	}
 	

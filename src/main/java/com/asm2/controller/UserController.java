@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.Principal;
 import java.util.List;
+import java.util.UUID;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -34,6 +35,9 @@ import com.asm2.entity.Recruitment;
 import com.asm2.entity.User;
 import com.asm2.service.JobService;
 
+import mail.RegistrationService;
+import mail.UserService;
+
 @Controller
 @RequestMapping("/user")
 public class UserController {
@@ -42,46 +46,11 @@ public class UserController {
 	private JobService jobService;
 	@Autowired
     private ServletContext servletContext;
+	@Autowired
+	private UserService userService;
+	@Autowired
+	private RegistrationService registrationService;
 	
-	
-//	@RequestMapping("/uploadCv")
-//	public String uploadCv(@RequestParam("file") MultipartFile file,
-//							@RequestParam("userId") int userId,
-//							HttpServletRequest request,
-//							RedirectAttributes redirectAttributes) {
-//		User user = jobService.getUserById(userId);
-//		String fileName = user.getUserName()+".pdf";
-//		if(file.isEmpty()) {
-//			redirectAttributes.addFlashAttribute("message","Please select a file to upload");
-//			return "redirect:/uploadStatus";
-//		}
-//		try {
-//			byte[] bytes = file.getBytes();
-//			String uploadDir = servletContext.getRealPath("/uploads");
-//			File uploadDirFile = new File(uploadDir);
-//		 
-//			if(!uploadDirFile.exists()) uploadDirFile.mkdirs();
-//			Path path = Paths.get(uploadDir, fileName);
-//			System.out.println("Tệp được lưu vào: "+path.toAbsolutePath());
-//			Files.write(path, bytes);
-//			
-//			Cv existingCv = jobService.getCvByUserId(userId);
-//			if(existingCv!=null) {
-//				existingCv.setFileName(fileName);
-//				jobService.addOrUpdateCv(existingCv);
-//			}else {
-//				Cv cv = new Cv();
-//				cv.setFileName(fileName);
-//				cv.setUser(user);
-//				jobService.addOrUpdateCv(cv);
-//			}
-//		}catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//		String referer = request.getHeader("Referer");
-//		redirectAttributes.addFlashAttribute("message","You successfully uploaded CV");
-//		return "redirect:"+referer;
-//	}
 	
 	@RequestMapping("/uploadCv")
 	public @ResponseBody String uploadCv(@RequestParam("file") MultipartFile file,
@@ -258,5 +227,32 @@ public class UserController {
 	public String saveJob(HttpServletRequest request) {
 		return "redirect:"+request.getHeader("Referer");
 	}
-	
+	@RequestMapping("/confirmAccount")
+	public String confirmAccount(@RequestParam("email") String email,
+									HttpServletRequest request,
+									RedirectAttributes redirectAttributes) {
+		String referer = request.getHeader("Referer");
+		User user = jobService.getUserByEmail(email);
+		if(user != null && user.getStatus() == 0) {
+			registrationService.register(user, request);
+			redirectAttributes.addFlashAttribute("confirm_await",true);
+		}else {
+			redirectAttributes.addFlashAttribute("confirm_await",false);
+		}
+		return "redirect:"+referer;
+	}
+	@RequestMapping("/verify")
+	public String verifyAccount(@RequestParam("token") String token,
+									RedirectAttributes redirectAttributes,
+									HttpServletRequest request) {
+		User user = userService.getUserByVerificationToken(token);
+		if(user!=null) {
+			userService.confirmUser(user);
+			redirectAttributes.addFlashAttribute("verified", true);
+		}else {
+			redirectAttributes.addFlashAttribute("verified",false);
+		}
+		String referer = request.getHeader("Referer");
+		return "redirect:"+referer;
+	}
 }
