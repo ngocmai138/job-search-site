@@ -85,8 +85,7 @@
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 </head>
 <body>
-	<nav
-		class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light"
+	<nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light"
 		id="ftco-navbar">
 		<div class="container-fluid px-md-4">
 			<a class="navbar-brand" href="${pageContext.request.contextPath}/">Work
@@ -96,73 +95,44 @@
 					<li class="nav-item active"><a
 						href="${pageContext.request.contextPath}/" class="nav-link">Trang
 							chủ</a></li>
-					<li class="nav-item"><a href="/" class="nav-link">Công
-							việc</a></li>
-
+				<!-- 	<li class="nav-item"><a href="${pageContext.request.contextPath}/listJob" class="nav-link">Công
+							việc</a></li> -->
+					
 					<s:authorize access="hasRole('candidate')">
-						<li class="nav-item" style="position: relative;"><a
-							class="nav-link" href="#"> Hồ Sơ </a>
-							<ul class="dropdown">
-								<li><a
-									href="${pageContext.request.contextPath}/showProfile?username=${pageContext.request.userPrincipal.name}">Hồ
-										sơ</a></li>
-								<li><a href="/save-job/get-list">Công việc đã lưu</a></li>
-								<li><a href="/user/get-list-apply">Công việc đã ứng
+					<li class="nav-item" style="position: relative;"><a class="nav-link" href="#"> Hồ Sơ
+						</a>
+							<ul class="dropdown" >
+								<li><a href="${pageContext.request.contextPath}/showProfile?username=${pageContext.request.userPrincipal.name}">Hồ sơ</a></li>
+								<li><a href="${pageContext.request.contextPath}/user/getListSaveJob?username=${pageContext.request.userPrincipal.name}">Công việc đã lưu</a></li>
+								<li><a href="${pageContext.request.contextPath}/user/getListApply?username=${pageContext.request.userPrincipal.name}">Công việc đã ứng
 										tuyển</a></li>
-								<li><a href="/user/get-list-company">Công ty đã theo
+								<li><a href="${pageContext.request.contextPath}/user/getListCompany?username=${pageContext.request.userPrincipal.name}">Công ty đã theo
 										dõi</a></li>
-								<li><a href="#"
-									onclick="document.getElementById('logoutForm').submit();">Đăng
-										xuất</a> <f:form id="logoutForm"
-										action="${pageContext.request.contextPath }/logout"
-										method="post" style="display:none;">
-										<input type="hidden" name="_csrf" value="${_csrf.token }" />
-									</f:form></li>
 							</ul></li>
 					</s:authorize>
 					<s:authorize access="hasRole('recruiter')">
-						<li class="nav-item"><a
-							href="${pageContext.request.contextPath }/listApplyPost?username=${pageContext.request.userPrincipal.name}"
-							class="nav-link">Ứng cử viên</a></li>
-						<li class="nav-item"><a class="nav-link" href="#"> 
-						<s:authentication property="principal.username" />
+					<li class="nav-item"><a href="${pageContext.request.contextPath }/listApplyPost?username=${pageContext.request.userPrincipal.name}" class="nav-link">Ứng cử
+							viên</a></li>
+						<li class="nav-item">
+							<a class="nav-link" href="#"> <s:authentication
+									property="principal.username" />
 						</a>
-							<ul class="dropdown">
-								<li><a href="#"
-									onclick="document.getElementById('detailCompany').submit();">Hồ
-										Sơ</a> <f:form id="detailCompany"
-										action="${pageContext.request.contextPath }/showProfile"
-										style="display:none;">
-										<input type="hidden"
-											value="${pageContext.request.userPrincipal.name }"
-											name="username">
-									</f:form></li>
-								<li><a href="#"
-									onclick="document.getElementById('showListPost').submit();">Danh
-										sách bài đăng</a> <f:form id="showListPost"
-										action="${pageContext.request.contextPath}/user/showListPost"
-										style="display:none;" method="get">
-										<input type="hidden"
-											value="${pageContext.request.userPrincipal.name }"
-											name="username">
-									</f:form></li>
-								<li><a href="#"
-									onclick="document.getElementById('logoutForm').submit();">Đăng
-										xuất</a> <f:form id="logoutForm"
-										action="${pageContext.request.contextPath }/logout"
-										method="post" style="display:none;">
-										<input type="hidden" name="_csrf" value="${_csrf.token }" />
-									</f:form></li>
-							</ul></li>
-						<li class="nav-item "><a href="#"
-							onclick="document.getElementById('postRecruitment').submit();"
-							class="nav-link">Đăng tuyển</a> <f:form id="postRecruitment"
-								action="${pageContext.request.contextPath }/recruitment/post"
-								method="get">
-								<input type="hidden"
-									value="${pageContext.request.userPrincipal.name}"
-									name="username">
-							</f:form></li>
+						<ul class="dropdown">
+							<li>
+								<a href="${pageContext.request.contextPath }/showProfile?username=${pageContext.request.userPrincipal.name }"
+									>Hồ Sơ</a>
+							</li>
+							<li>
+								<a href="${pageContext.request.contextPath}/user/showListPost?username=${pageContext.request.userPrincipal.name }">Danh sách
+									bài đăng</a> 
+									
+							</li>
+								<li><a href="${pageContext.request.contextPath }/logout">Đăng
+										xuất</a> </li>
+							</ul>
+						</li>
+						<li class="nav-item "><a href="${pageContext.request.contextPath }/recruitment/post?username=${pageContext.request.userPrincipal.name}" class="nav-link">Đăng
+								tuyển</a></li>
 					</s:authorize>
 					<s:authorize access="isAnonymous()">
 						<li class="nav-item cta cta-colored"><a
@@ -170,20 +140,19 @@
 							class="nav-link"> Đăng nhập</a></li>
 					</s:authorize>
 					<s:authorize access="isAuthenticated()">
-						<li class="nav-item"><a class="nav-link" href="#"
-							onclick="document.getElementById('logoutForm').submit();">Đăng
-								xuất</a> <f:form id="logoutForm"
-								action="${pageContext.request.contextPath }/logout"
-								method="post" style="display:none;">
-								<input type="hidden" name="_csrf" value="${_csrf.token }" />
-							</f:form></li>
+						<li class="nav-item">
+							<a class="nav-link" href="${pageContext.request.contextPath }/logout">
+								Đăng xuất</a>
+						</li>
 					</s:authorize>
 				</ul>
 			</div>
 		</div>
 	</nav>
 
-
+	<c:if test="${not empty message}">
+		<div class="alert alert-info">${message}</div>
+	</c:if>
 
 	<div class="hero-wrap hero-wrap-2"
 		style="background-image: url('${pageContext.request.contextPath}/assets/images/bg_1.jpg');"
@@ -223,42 +192,44 @@
 			<p
 				style="font-size: 20px; font-weight: bold; color: #aaa; margin-top: 10px">Xác
 				thực email đăng nhập</p>
-			<div
-				style="width: 600px; height: 400px; border-radius: 5px; box-shadow: rgba(0, 0, 0, 0.4) 0px 0px 10px; margin: 20px auto; padding: 15px">
-				<p style="line-height: 35px; font-size: 16px">
-					Xin chào, <span>${user.userName}</span> và làm theo
-					hướng dẫn trong email. Trường hợp không nhận được email, bạn vui
-					lòng bấm nút Nhận email xác thực dưới đây.
-				</p>
-				<div class="row form-group">
-					<form action="/user/confirmAccount" method="post"
-						class="col-md-12">
-						<input type="hidden" value="${user.email}" name="email"
-							class="btn px-4 btn-primary text-white"> <input
-							type="submit" value="Nhận email xác thực"
-							class="btn px-4 btn-primary text-white">
-					</form>
+			<c:if test="${empty confirm_await}">
+				<div
+					style="width: 600px; height: 400px; border-radius: 5px; box-shadow: rgba(0, 0, 0, 0.4) 0px 0px 10px; margin: 20px auto; padding: 15px">
+					<p style="line-height: 35px; font-size: 16px">
+						Xin chào, <span>${user.userName}</span> và làm theo hướng dẫn
+						trong email. Trường hợp không nhận được email, bạn vui lòng bấm
+						nút Nhận email xác thực dưới đây.
+					</p>
+					<div class="row form-group">
+						<form
+							action="${pageContext.request.contextPath }/user/confirmAccount"
+							method="post" class="col-md-12">
+							<input type="hidden" value="${user.email}" name="email"
+								class="btn px-4 btn-primary text-white"> <input
+								type="submit" value="Nhận email xác thực"
+								class="btn px-4 btn-primary text-white">
+						</form>
+					</div>
+					<p>
+						Mọi thắc mắc vui lòng liên hệ bộ phận CSKH của WorkCV:<br>
+					</p>
+					- Điện thoại:<span style="color: #5f80ec">(024) 6680 5588</span><br>
+					- Email: <a href="#" style="color: #5f80ec"> hotro@workcv.vn</a>
 				</div>
-				<p>
-					Mọi thắc mắc vui lòng liên hệ bộ phận CSKH của WorkCV:<br>
-				</p>
-				- Điện thoại:<span style="color: #5f80ec">(024) 6680 5588</span><br>
-				- Email: <a href="#" style="color: #5f80ec"> hotro@workcv.vn</a>
-			</div>
-			<c:if test="${not empty comfirm_await}">
-			<div
-				style="width: 600px; height: 400px; border-radius: 5px; box-shadow: rgba(0, 0, 0, 0.4) 0px 0px 10px; margin: 20px auto; padding: 15px">
-				<p style="line-height: 35px; font-size: 16px">
-					Xin chào, <span>${user.userName}</span> .Bạn đã gửi yêu
-					cầu xác thực thành công, vui lòng kiểm tra mail để xác thực.Cảm ơn
-					bạn!!!
-				</p>
-				<p>
-					Mọi thắc mắc vui lòng liên hệ bộ phận CSKH của WorkCV:<br>
-				</p>
-				- Điện thoại:<span style="color: #5f80ec">(024) 6680 5588</span><br>
-				- Email: <a href="#" style="color: #5f80ec"> hotro@workcv.vn</a>
-			</div>
+			</c:if>
+			<c:if test="${not empty confirm_await}">
+				<div
+					style="width: 600px; height: 400px; border-radius: 5px; box-shadow: rgba(0, 0, 0, 0.4) 0px 0px 10px; margin: 20px auto; padding: 15px">
+					<p style="line-height: 35px; font-size: 16px">
+						Xin chào, <span>${user.userName}</span> .Bạn đã gửi yêu cầu xác
+						thực thành công, vui lòng kiểm tra mail để xác thực.Cảm ơn bạn!!!
+					</p>
+					<p>
+						Mọi thắc mắc vui lòng liên hệ bộ phận CSKH của WorkCV:<br>
+					</p>
+					- Điện thoại:<span style="color: #5f80ec">(024) 6680 5588</span><br>
+					- Email: <a href="#" style="color: #5f80ec"> hotro@workcv.vn</a>
+				</div>
 			</c:if>
 		</div>
 	</c:if>

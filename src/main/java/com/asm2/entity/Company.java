@@ -46,13 +46,8 @@ public class Company {
 							CascadeType.PERSIST, CascadeType.REFRESH})
 	@JoinColumn(name="company_id")
 	private List<Recruitment> recruitments;
-	@ManyToMany(fetch = FetchType.LAZY,
-				cascade = {CascadeType.DETACH, CascadeType.MERGE,
-							CascadeType.PERSIST, CascadeType.REFRESH})
-	@JoinTable(name="follow_company",
-				joinColumns = @JoinColumn(name="company_id"),
-				inverseJoinColumns = @JoinColumn(name="user_id"))
-	private List<User> usersFollow;
+	@OneToMany(mappedBy = "company")
+	private List<FollowCompany> followCompanies;
 	
 	@Column(name="number_of_recruitments")
 	private int numberOfRecruitments;
@@ -127,19 +122,11 @@ public class Company {
 	public void setActive(boolean isActive) {
 		this.isActive = isActive;
 	}
-	
-	public List<User> getUsers() {
-		return usersFollow;
+	public List<FollowCompany> getFollowCompanies() {
+		return followCompanies;
 	}
-	public void setUsers(List<User> users) {
-		this.usersFollow = users;
-	}
-	
-	public List<User> getUsersFollow() {
-		return usersFollow;
-	}
-	public void setUsersFollow(List<User> usersFollow) {
-		this.usersFollow = usersFollow;
+	public void setFollowCompanies(List<FollowCompany> followCompanies) {
+		this.followCompanies = followCompanies;
 	}
 	public int getNumberOfRecruitments() {
 		return numberOfRecruitments;
@@ -154,11 +141,11 @@ public class Company {
 		recruitments.add(recruitment);
 	}
 	
-	public void addUserFollow(User user) {
-		if(usersFollow == null) {
-			usersFollow = new ArrayList<User>();
+	public void addFollowCompany(FollowCompany followCompany) {
+		if(followCompanies == null) {
+			followCompanies = new ArrayList<FollowCompany>();
 		}
-		usersFollow.add(user);
+		followCompanies.add(followCompany);
 	}
 	
 	public Company() {

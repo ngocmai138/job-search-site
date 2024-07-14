@@ -11,9 +11,12 @@ import com.asm2.entity.ApplyPost;
 import com.asm2.entity.Category;
 import com.asm2.entity.Company;
 import com.asm2.entity.Cv;
+import com.asm2.entity.FollowCompany;
 import com.asm2.entity.Recruitment;
 import com.asm2.entity.Role;
+import com.asm2.entity.SaveJob;
 import com.asm2.entity.User;
+import com.asm2.entity.VerificationToken;
 
 @Service
 @Transactional
@@ -137,8 +140,8 @@ public class JobServiceImpl implements JobService{
 	}
 
 	@Override
-	public void addOrUpdateRecruitment(Recruitment recruitment) {
-		jobDAO.addOrUpdateRecruitment(recruitment);
+	public void saveOrUpdateRecruitment(Recruitment recruitment) {
+		jobDAO.saveOrUpdateRecruitment(recruitment);
 	}
 
 	@Override
@@ -207,14 +210,14 @@ public class JobServiceImpl implements JobService{
 	}
 
 	@Override
-	public void addOrUpdateCv(Cv cv) {
-		jobDAO.addOrUpdateCv(cv);
+	public void saveOrUpdateCv(Cv cv) {
+		jobDAO.saveOrUpdateCv(cv);
 		
 	}
 
 	@Override
-	public void addOrUpdateApplyPost(ApplyPost applyPost) {
-		jobDAO.addOrUpdateApplyPost(applyPost);
+	public void saveOrUpdateApplyPost(ApplyPost applyPost) {
+		jobDAO.saveOrUpdateApplyPost(applyPost);
 	}
 
 	@Override
@@ -222,4 +225,100 @@ public class JobServiceImpl implements JobService{
 		return jobDAO.getUserByEmail(email);
 	}
 
+	@Override
+	public VerificationToken getVerificationByToken(String token) {
+		return jobDAO.getVerificationByToken(token);
+	}
+
+	@Override
+	public void saveVerificationToken(VerificationToken verificationToken) {
+		jobDAO.saveVerificationToken(verificationToken);
+	}
+
+	@Override
+	public void createSaveJob(int recruitmentId, int userId) {
+		jobDAO.createSaveJob(recruitmentId, userId);
+	}
+
+	@Override
+	public SaveJob getSaveJob(int recruitmentId, int userId) {
+		return jobDAO.getSaveJob(recruitmentId, userId);
+	}
+
+	@Override
+	public ApplyPost getApplyPost(User user, Recruitment recruitment) {
+		return jobDAO.getApplyPost(user, recruitment);
+	}
+
+	@Override
+	public FollowCompany getFollowCompany(User user, Company company) {
+		return jobDAO.getFollowCompany(user, company);
+	}
+
+	@Override
+	public void createFollowCompany(User user, Company company) {
+		jobDAO.createFollowCompany(user, company);
+		
+	}
+
+	@Override
+	public List<FollowCompany> getFollowCompanies(int userId, int pageSize, int pageNumber) {
+		return jobDAO.getFollowCompanies(userId, pageSize, pageNumber);
+	}
+
+	@Override
+	public Long getTotalFollowCompanies(int userId) {
+		return jobDAO.getTotalFollowCompanies(userId);
+	}
+
+	@Override
+	public FollowCompany getFollowCompanyById(int followCompanyId) {
+		return jobDAO.getFollowCompanyById(followCompanyId);
+	}
+
+	@Override
+	public void deleteFollowCompany(int followCompanyId) {
+		jobDAO.deleteFollowCompany(followCompanyId);
+		
+	}
+
+	@Override
+	public List<ApplyPost> getApplyPostsByCandidateId(int candidateId, int pageSize, int pageNumber) {
+		return jobDAO.getApplyPostsByCandidateId(candidateId, pageSize, pageNumber);
+	}
+
+	@Override
+	public Long getTotalApplysPostsByCandidateId(int candidateId) {
+		return jobDAO.getTotalApplysPostsByCandidateId(candidateId);
+	}
+
+	@Override
+	public ApplyPost getApplyPostById(int applyPostId) {
+		return jobDAO.getApplyPostById(applyPostId);
+	}
+
+	@Override
+	public void deleteApplyPost(int applyPostId) {
+		jobDAO.deleteApplyPost(applyPostId);
+	}
+
+	@Override
+	public List<SaveJob> getSaveJobByUserId(int userId, int pageSize, int pageNumber) {
+		return jobDAO.getSaveJobByUserId(userId, pageSize, pageNumber);
+	}
+
+	@Override
+	public Long getTotalSaveJobByUserId(int userId) {
+		return jobDAO.getTotalSaveJobByUserId(userId);
+	}
+
+	@Override
+	public SaveJob getSaveJobById(int saveJobId) {
+		return jobDAO.getSaveJobById(saveJobId);
+	}
+
+	@Override
+	public void deleteSaveJob(int saveJobId) {
+		jobDAO.deleteSaveJob(saveJobId);
+	}
 }

@@ -14,9 +14,12 @@ import com.asm2.entity.ApplyPost;
 import com.asm2.entity.Category;
 import com.asm2.entity.Company;
 import com.asm2.entity.Cv;
+import com.asm2.entity.FollowCompany;
 import com.asm2.entity.Recruitment;
 import com.asm2.entity.Role;
+import com.asm2.entity.SaveJob;
 import com.asm2.entity.User;
+import com.asm2.entity.VerificationToken;
 
 @Repository
 @Transactional
@@ -208,7 +211,7 @@ public class JobDAOImpl implements JobDAO{
 	}
 
 	@Override
-	public void addOrUpdateRecruitment(Recruitment recruitment) {
+	public void saveOrUpdateRecruitment(Recruitment recruitment) {
 		sessionFactory.getCurrentSession().saveOrUpdate(recruitment);
 	}
 
@@ -379,12 +382,12 @@ public class JobDAOImpl implements JobDAO{
 	}
 
 	@Override
-	public void addOrUpdateCv(Cv cv) {
+	public void saveOrUpdateCv(Cv cv) {
 		sessionFactory.getCurrentSession().saveOrUpdate(cv);
 	}
 
 	@Override
-	public void addOrUpdateApplyPost(ApplyPost applyPost) {
+	public void saveOrUpdateApplyPost(ApplyPost applyPost) {
 		sessionFactory.getCurrentSession().saveOrUpdate(applyPost);
 	}
 
@@ -397,6 +400,184 @@ public class JobDAOImpl implements JobDAO{
 				User.class);
 		query.setParameter("email", email);
 		return query.uniqueResult();
+	}
+
+	@Override
+	public VerificationToken getVerificationByToken(String token) {
+		Session session = sessionFactory.getCurrentSession();
+		Query<VerificationToken> query = session.createQuery(""
+				+ "from VerificationToken "
+				+ "where token =:token",VerificationToken.class);
+		query.setParameter("token", token);
+		return query.uniqueResult();
+	}
+
+	@Override
+	public void saveVerificationToken(VerificationToken verificationToken) {
+		sessionFactory.getCurrentSession().save(verificationToken);
+	}
+
+	@Override
+	public void createSaveJob(int recruitmentId, int userId) {
+		Session session = sessionFactory.getCurrentSession();
+		Recruitment recruitment = session.get(Recruitment.class, recruitmentId);
+		User user = session.get(User.class, userId);
+		if(recruitment!=null & user != null) {
+			SaveJob saveJob = new SaveJob(user, recruitment);
+			session.save(saveJob);
+		}
+		else {
+			throw new RuntimeException("Recruitment or User not found");
+		}
+	}
+
+	@Override
+	public SaveJob getSaveJob(int recruitmentId, int userId) {
+		Session session = sessionFactory.getCurrentSession();
+		Query<SaveJob> query = session.createQuery("from SaveJob s "
+				+ "where s.recruitment.id =: recruitmentId "
+				+ "and s.user.id =: userId",SaveJob.class);
+		query.setParameter("userId", userId);
+		query.setParameter("recruitmentId", recruitmentId);
+		return query.uniqueResult();
+	}
+
+	@Override
+	public ApplyPost getApplyPost(User user, Recruitment recruitment) {
+		Session session = sessionFactory.getCurrentSession();
+		Query<ApplyPost> query = session.createQuery(""
+				+ "from ApplyPost a "
+				+ "where a.user.id = :usId "
+				+ "and a.recruitment.id = :reId",
+				ApplyPost.class);
+		query.setParameter("usId", user.getId());
+		query.setParameter("reId", recruitment.getId());
+		return query.uniqueResult();
+	}
+
+	@Override
+	public FollowCompany getFollowCompany(User user, Company company) {
+		Session session = sessionFactory.getCurrentSession();
+		Query<FollowCompany> query = session.createQuery(""
+				+ "from FollowCompany f "
+				+ "where f.user.id =: userId "
+				+ "and f.company.id =: companyId", FollowCompany.class);
+		query.setParameter("userId", user.getId());
+		query.setParameter("companyId", company.getId());
+		return query.uniqueResult();
+	}
+
+	@Override
+	public void createFollowCompany(User user, Company company) {
+		FollowCompany followCompany = new FollowCompany(user, company);
+		sessionFactory.getCurrentSession().save(followCompany);
+	}
+
+	@Override
+	public List<FollowCompany> getFollowCompanies(int userId, int pageSize, int pageNumber) {
+		Session session = sessionFactory.getCurrentSession();
+		Query<FollowCompany> query = session.createQuery(""
+				+ "from FollowCompany f "
+				+ "where f.user.id = :userId", FollowCompany.class);
+		query.setParameter("userId", userId);
+		query.setMaxResults(pageSize);
+		query.setFirstResult((pageNumber-1)*pageSize);
+		return query.getResultList();
+	}
+
+	@Override
+	public Long getTotalFollowCompanies(int userId) {
+		Session session = sessionFactory.getCurrentSession();
+		Query<Long> query = session.createQuery(""
+				+ "select count (f) "
+				+ "from FollowCompany f "
+				+ "where f.user.id = :userId",Long.class);
+		query.setParameter("userId", userId);
+		return query.uniqueResult();
+	}
+
+	@Override
+	public FollowCompany getFollowCompanyById(int followCompanyId) {
+		Session session = sessionFactory.getCurrentSession();
+		return session.get(FollowCompany.class, followCompanyId);
+	}
+
+	@Override
+	public void deleteFollowCompany(int followCompanyId) {
+		Session session = sessionFactory.getCurrentSession();
+		FollowCompany followCompany = session.get(FollowCompany.class, followCompanyId);
+		if(followCompany!=null)
+		session.delete(followCompany);
+	}
+
+	@Override
+	public List<ApplyPost> getApplyPostsByCandidateId(int candidateId, int pageSize, int pageNumber) {
+		Session session = sessionFactory.getCurrentSession();
+		Query<ApplyPost> query = session.createQuery(""
+				+ "from ApplyPost a "
+				+ "where a.user.id = :userId", ApplyPost.class);
+		query.setParameter("userId", candidateId);
+		query.setFirstResult((pageNumber-1)*pageSize);
+		query.setMaxResults(pageSize);
+		return query.getResultList();
+	}
+
+	@Override
+	public Long getTotalApplysPostsByCandidateId(int candidateId) {
+		Session session = sessionFactory.getCurrentSession();
+		Query<Long> query = session.createQuery(""
+				+ "select count(a) "
+				+ "from ApplyPost a "
+				+ "where a.user.id = :userId", Long.class);
+		query.setParameter("userId", candidateId);
+		return query.uniqueResult();
+	}
+
+	@Override
+	public ApplyPost getApplyPostById(int applyPostId) {
+		return sessionFactory.getCurrentSession().get(ApplyPost.class, applyPostId);
+	}
+
+	@Override
+	public void deleteApplyPost(int applyPostId) {
+		Session session = sessionFactory.getCurrentSession();
+		ApplyPost applyPost = session.get(ApplyPost.class, applyPostId);
+		session.delete(applyPost);
+	}
+
+	@Override
+	public List<SaveJob> getSaveJobByUserId(int userId, int pageSize, int pageNumber) {
+		Session session = sessionFactory.getCurrentSession();
+		Query<SaveJob> query = session.createQuery(""
+				+ "from SaveJob s "
+				+ "where s.user.id = :userId", SaveJob.class);
+		query.setParameter("userId", userId);
+		query.setFirstResult((pageNumber-1)*pageSize);
+		query.setMaxResults(pageSize);
+		return query.getResultList();
+	}
+
+	@Override
+	public Long getTotalSaveJobByUserId(int userId) {
+		Session session = sessionFactory.getCurrentSession();
+		Query<Long> query = session.createQuery(""
+				+ "select count(s) "
+				+ "from SaveJob s "
+				+ "where s.user.id = :userId", Long.class);
+		query.setParameter("userId", userId);
+		return query.uniqueResult();
+	}
+
+	@Override
+	public SaveJob getSaveJobById(int saveJobId) {
+		return sessionFactory.getCurrentSession().get(SaveJob.class, saveJobId);
+	}
+
+	@Override
+	public void deleteSaveJob(int saveJobId) {
+		Session session = sessionFactory.getCurrentSession();
+		SaveJob saveJob = session.get(SaveJob.class, saveJobId);
+		session.delete(saveJob);
 	}
 	
 

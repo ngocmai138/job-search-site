@@ -48,9 +48,6 @@ public class JobSearchSecurityConfig {
 					.authorizeRequests(configurer ->
 										configurer.antMatchers("/user/uploadCv").permitAll()
 													.antMatchers("/**").permitAll())
-					.authorizeRequests(configurer ->
-										configurer.antMatchers("/admin").hasRole("admin")
-													.antMatchers("/**").permitAll())
 					.formLogin(configurer ->
 										configurer.loginPage("/login")
 													.loginProcessingUrl("/authenticateTheUser")
@@ -61,8 +58,6 @@ public class JobSearchSecurityConfig {
 								configurer.logoutUrl("/logout")
 											.logoutSuccessUrl("/?logout")
 											.permitAll())
-					.exceptionHandling(configurer ->
-										configurer.accessDeniedPage("/access-denied"))
 					.csrf(csrf->csrf.disable())
 					.build();
 	} 

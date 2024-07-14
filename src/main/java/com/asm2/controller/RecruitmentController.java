@@ -66,7 +66,7 @@ public class RecruitmentController {
 						Model model,
 						HttpServletRequest request,
 						RedirectAttributes redirectAttributes) {
-		jobService.addOrUpdateRecruitment(recruitment);
+		jobService.saveOrUpdateRecruitment(recruitment);
 		
 		String referer = request.getHeader("Referer");
 		model.addAttribute(recruitment);
@@ -86,7 +86,7 @@ public class RecruitmentController {
 	public String add(@ModelAttribute("recruitment") Recruitment recruitment,
 						HttpServletRequest request,
 						RedirectAttributes redirectAttributes) {
-		jobService.addOrUpdateRecruitment(recruitment);
+		jobService.saveOrUpdateRecruitment(recruitment);
 		String referer = request.getHeader("Referer");
 		redirectAttributes.addFlashAttribute("msg_success","success");
 		return "redirect:"+referer;

@@ -60,13 +60,11 @@ public class Recruitment {
 	private Date deadline;
 	@Column(name="isActive")
 	private boolean isActive;
-	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinTable(name = "save_job",
-				joinColumns = @JoinColumn(name="recruitment_id"),
-				inverseJoinColumns = @JoinColumn(name="user_id"))
-	private List<User> users;
+	
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "recruitment")
 	private List<ApplyPost> applyPosts;
+	@OneToMany(mappedBy = "recruitment")
+	private List<SaveJob> saveJobs;
 	
 	public Recruitment() {}
 	
@@ -160,14 +158,6 @@ public class Recruitment {
 	public void setIsActive(boolean isActive) {
 		this.isActive = isActive;
 	}
-	
-	public List<User> getUsers() {
-		return users;
-	}
-	public void setUsers(List<User> users) {
-		this.users = users;
-	}
-	
 	public List<ApplyPost> getApplyPosts() {
 		return applyPosts;
 	}
@@ -182,17 +172,28 @@ public class Recruitment {
 		this.createdAt = createdAt;
 	}
 
-	public void addUser(User user) {
-		if(users == null) {
-			users = new ArrayList<User>();
-		}
-		users.add(user);
+	public List<SaveJob> getSaveJobs() {
+		return saveJobs;
+	}
+
+	public void setSaveJobs(List<SaveJob> saveJobs) {
+		this.saveJobs = saveJobs;
+	}
+
+	public void setActive(boolean isActive) {
+		this.isActive = isActive;
 	}
 	public void addApplyPost(ApplyPost applyPost) {
 		if(applyPosts == null) {
 			applyPosts = new ArrayList<ApplyPost>();
 		}
 		applyPosts.add(applyPost);
+	}
+	public void addSaveJob(SaveJob saveJob) {
+		if(saveJobs == null) {
+			saveJobs = new ArrayList<SaveJob>();
+		}
+		saveJobs.add(saveJob);
 	}
 	@PrePersist
 	public void onCreate() {

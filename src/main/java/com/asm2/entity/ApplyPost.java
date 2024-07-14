@@ -40,7 +40,7 @@ public class ApplyPost {
 	@PrePersist
 	public void onCreate() {
 		this.createdAt = new Date(System.currentTimeMillis());
-		this.status = 1;
+		this.status = 0;
 	}
 	
 	public int getId() {

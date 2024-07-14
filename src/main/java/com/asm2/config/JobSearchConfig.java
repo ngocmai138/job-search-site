@@ -95,7 +95,7 @@ public class JobSearchConfig implements WebMvcConfigurer{
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
 		registry.addResourceHandler("/resources/**").addResourceLocations("/resources/");
         registry.addResourceHandler("/assets/**").addResourceLocations("/assets/");
-        registry.addResourceHandler("/uploads/**").addResourceLocations("classpath:/uploads/");
+        registry.addResourceHandler("/uploads/**").addResourceLocations("/uploads/");
 	}
 	
 	@Bean

@@ -85,8 +85,7 @@
 </head>
 <body>
 <body>
-	<nav
-		class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light"
+	<nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light"
 		id="ftco-navbar">
 		<div class="container-fluid px-md-4">
 			<a class="navbar-brand" href="${pageContext.request.contextPath}/">Work
@@ -96,71 +95,44 @@
 					<li class="nav-item active"><a
 						href="${pageContext.request.contextPath}/" class="nav-link">Trang
 							chủ</a></li>
-					<li class="nav-item"><a href="/" class="nav-link">Công
-							việc</a></li>
-
+				<!-- 	<li class="nav-item"><a href="${pageContext.request.contextPath}/listJob" class="nav-link">Công
+							việc</a></li> -->
+					
 					<s:authorize access="hasRole('candidate')">
-						<li class="nav-item" style="position: relative;"><a
-							class="nav-link" href="#"> Hồ Sơ </a>
-							<ul class="dropdown">
+					<li class="nav-item" style="position: relative;"><a class="nav-link" href="#"> Hồ Sơ
+						</a>
+							<ul class="dropdown" >
 								<li><a href="${pageContext.request.contextPath}/showProfile?username=${pageContext.request.userPrincipal.name}">Hồ sơ</a></li>
-								<li><a href="/save-job/get-list">Công việc đã lưu</a></li>
-								<li><a href="/user/get-list-apply">Công việc đã ứng
+								<li><a href="${pageContext.request.contextPath}/user/getListSaveJob?username=${pageContext.request.userPrincipal.name}">Công việc đã lưu</a></li>
+								<li><a href="${pageContext.request.contextPath}/user/getListApply?username=${pageContext.request.userPrincipal.name}">Công việc đã ứng
 										tuyển</a></li>
-								<li><a href="/user/get-list-company">Công ty đã theo
+								<li><a href="${pageContext.request.contextPath}/user/getListCompany?username=${pageContext.request.userPrincipal.name}">Công ty đã theo
 										dõi</a></li>
-								<li><a href="#"
-									onclick="document.getElementById('logoutForm').submit();">Đăng
-										xuất</a> <f:form id="logoutForm"
-										action="${pageContext.request.contextPath }/logout"
-										method="post" style="display:none;">
-										<input type="hidden" name="_csrf" value="${_csrf.token }" />
-									</f:form></li>
 							</ul></li>
 					</s:authorize>
 					<s:authorize access="hasRole('recruiter')">
-						<li class="nav-item"><a
-							href="${pageContext.request.contextPath }/listApplyPost?username=${pageContext.request.userPrincipal.name}"
-							class="nav-link">Ứng cử viên</a></li>
-						<li class="nav-item"><a class="nav-link" href="#"> <s:authentication
+					<li class="nav-item"><a href="${pageContext.request.contextPath }/listApplyPost?username=${pageContext.request.userPrincipal.name}" class="nav-link">Ứng cử
+							viên</a></li>
+						<li class="nav-item">
+							<a class="nav-link" href="#"> <s:authentication
 									property="principal.username" />
 						</a>
-							<ul class="dropdown">
-								<li><a href="#"
-									onclick="document.getElementById('detailCompany').submit();">Hồ
-										Sơ</a> <f:form id="detailCompany"
-										action="${pageContext.request.contextPath }/showProfile"
-										style="display:none;" method="get">
-										<input type="hidden"
-											value="${pageContext.request.userPrincipal.name }"
-											name="username">
-									</f:form></li>
-								<li><a href="#"
-									onclick="document.getElementById('showListPost').submit();">Danh
-										sách bài đăng</a> <f:form id="showListPost"
-										action="${pageContext.request.contextPath}/user/showListPost"
-										style="display:none;" method="get">
-										<input type="hidden"
-											value="${pageContext.request.userPrincipal.name }"
-											name="username">
-									</f:form></li>
-								<li><a href="#"
-									onclick="document.getElementById('logoutForm').submit();">Đăng
-										xuất</a> <f:form id="logoutForm"
-										action="${pageContext.request.contextPath }/logout"
-										method="post" style="display:none;">
-										<input type="hidden" name="_csrf" value="${_csrf.token }" />
-									</f:form></li>
-							</ul></li>
-						<li class="nav-item "><a href="#"
-							onclick="document.getElementById('postRecruitment').submit();"
-							class="nav-link">Đăng tuyển</a> <f:form id="postRecruitment"
-								action="${pageContext.request.contextPath }/recruitment/post"
-								method="get">
-								<input type="hidden"
-									value="${pageContext.request.userPrincipal.name}"
-									name="username">
-							</f:form></li>
+						<ul class="dropdown">
+							<li>
+								<a href="${pageContext.request.contextPath }/showProfile?username=${pageContext.request.userPrincipal.name }"
+									>Hồ Sơ</a>
+							</li>
+							<li>
+								<a href="${pageContext.request.contextPath}/user/showListPost?username=${pageContext.request.userPrincipal.name }">Danh sách
+									bài đăng</a> 
+									
+							</li>
+								<li><a href="${pageContext.request.contextPath }/logout">Đăng
+										xuất</a> </li>
+							</ul>
+						</li>
+						<li class="nav-item "><a href="${pageContext.request.contextPath }/recruitment/post?username=${pageContext.request.userPrincipal.name}" class="nav-link">Đăng
+								tuyển</a></li>
 					</s:authorize>
 					<s:authorize access="isAnonymous()">
 						<li class="nav-item cta cta-colored"><a
@@ -168,13 +140,10 @@
 							class="nav-link"> Đăng nhập</a></li>
 					</s:authorize>
 					<s:authorize access="isAuthenticated()">
-						<li class="nav-item"><a class="nav-link" href="#"
-							onclick="document.getElementById('logoutForm').submit();">Đăng
-								xuất</a> <f:form id="logoutForm"
-								action="${pageContext.request.contextPath }/logout"
-								method="post" style="display:none;">
-								<input type="hidden" name="_csrf" value="${_csrf.token }" />
-							</f:form></li>
+						<li class="nav-item">
+							<a class="nav-link" href="${pageContext.request.contextPath }/logout">
+								Đăng xuất</a>
+						</li>
 					</s:authorize>
 				</ul>
 			</div>
@@ -245,7 +214,7 @@
 											<div style="margin-left: 1px" class="row">
 												<p>
 													<a
-														href="#"
+														href="${pageContext.request.contextPath}/uploads/${applyPost.user.cv.fileName}"
 														class="btn btn-primary">Xem cv</a>
 												</p>
 											</div>
@@ -254,7 +223,7 @@
 								</div>
 							</div>
 						</c:forEach>
-						<c:if test="${isEmpty}">
+						<c:if test="${totalApplyPost<1}">
 							<div style="text-align: center">
 								<p style="color: red">Không có kết quả nào</p>
 							</div>

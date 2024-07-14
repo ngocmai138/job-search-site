@@ -1,5 +1,7 @@
 drop database if exists `spring_workcv`;
-create database if not exists `spring_workcv`;
+create database if not exists `spring_workcv`
+CHARACTER SET utf8mb4
+COLLATE utf8mb4_unicode_ci;
 use `spring_workcv`;
 
 drop table if exists `category`;
@@ -20,7 +22,7 @@ create table `user`(
                     `image` varchar(255),
                     `password` varchar(255),
                     `phone_number` varchar(255),
-                    `status` int(11) default 1,
+                    `status` int(11) default 0,
 					`isActive` tinyint(1) default 1,
                     primary key (`id`),
                     INDEX idx_username (`user_name`));
@@ -114,11 +116,17 @@ create table `applypost`(
                             `name_cv` varchar(255),
                             `status` int(11),
                             `text` varchar(255),
-                            `image` varchar(255),
 							primary key (`id`),
                             constraint `fk_ap_recruitment` foreign key (`recruitment_id`) references `recruitment`(id),
                             constraint `fk_ap_user` foreign key(`user_id`) references `user`(id));
 
+drop table if exists `verification_token`;
+create table `verification_token`(
+									`id` int(11) auto_increment primary key,
+                                    `token` varchar(255) not null,
+                                    `user_id` int(11) not null,
+                                    `expiry_date` timestamp not null,
+                                    constraint `fk_vt_user` foreign key(`user_id`) references `user`(id));
 
 -- Trigger khi thêm dữ liệu vào bảng authorities, tự động tạo cv hoặc company tương ứng
 DELIMITER //
@@ -136,7 +144,7 @@ BEGIN
     -- Tạo CV nếu role_id là 2
     IF NEW.role_id = 2 THEN
         INSERT INTO `cv` (`file_name`, `user_id`, `isActive`)
-        VALUES (CONCAT('cv', NEW.user_id, '.pdf'), NEW.user_id, 1);
+        VALUES (CONCAT('user', NEW.user_id, '_cv.pdf'), NEW.user_id, 1);
     END IF;
 END //
 
@@ -216,7 +224,7 @@ INSERT INTO `role` (`role_name`) VALUES
 
 -- Chèn dữ liệu mẫu vào bảng user
 INSERT INTO `user` (`address`, `description`, `email`, `user_name`, `image`, `password`, `phone_number`)
-VALUES ('123 Main St', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.', 'user1@example.com', 'user1', 'person_1.jpg', '{noop}123', '1234567890');
+VALUES ('123 Main St', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.', 'phuthuynho1381@gmail.com', 'user1', 'person_1.jpg', '{noop}123', '1234567890');
 
 INSERT INTO `user` (`address`, `description`, `email`, `user_name`, `image`, `password`, `phone_number`)
 VALUES ('456 Elm St', 'Pellentesque egestas faucibus nunc, id tincidunt mauris suscipit eget. Ut ac sapien in risus facilisis malesuada. Fusce id gravida diam. Lorem ipsum dolor sit amet, consectetur adipiscing elit. In eu ornare felis. Fusce a tellus a tellus ultrices egestas placerat in neque. Praesent non condimentum ante. Etiam nec porttitor turpis.', 'user2@example.com', 'user2', 'person_2.jpg', '{noop}123', '0987654321');
@@ -227,8 +235,8 @@ VALUES ('789 Oak St', 'Duis vitae blandit massa, at gravida sapien. Morbi semper
 INSERT INTO `user` (`address`, `description`, `email`, `user_name`, `image`, `password`, `phone_number`)
 VALUES ('321 Pine St', 'Etiam at libero massa. Aliquam aliquet aliquet venenatis. Donec rutrum risus nec quam accumsan, at condimentum lectus dignissim. Suspendisse nec diam mi. Curabitur hendrerit vehicula lobortis. Proin ullamcorper diam non libero sollicitudin, a pellentesque dolor cursus. Nam ac facilisis velit.', 'user4@example.com', 'user4', 'person_4.jpg', '{noop}123', '3213214321');
 
-INSERT INTO `user` (`address`, `description`, `email`, `user_name`, `image`, `password`, `phone_number`)
-VALUES ('654 Maple St', 'Praesent consectetur erat eros, venenatis consequat augue volutpat quis. Proin porttitor hendrerit dignissim. Phasellus lorem elit, malesuada a lectus in, faucibus ullamcorper ante. Nunc ac est eget ipsum faucibus euismod vulputate interdum ipsum. Morbi maximus luctus dui nec gravida.', 'user5@example.com', 'user5', 'person_5.jpg', '{noop}123', '4564564567');
+INSERT INTO `user` (`address`, `description`, `email`, `user_name`, `image`, `password`, `phone_number`,`status`)
+VALUES ('654 Maple St', 'Praesent consectetur erat eros, venenatis consequat augue volutpat quis. Proin porttitor hendrerit dignissim. Phasellus lorem elit, malesuada a lectus in, faucibus ullamcorper ante. Nunc ac est eget ipsum faucibus euismod vulputate interdum ipsum. Morbi maximus luctus dui nec gravida.', 'user5@example.com', 'user5', 'person_5.jpg', '{noop}123', '4564564567','1');
 
 
 
@@ -311,9 +319,9 @@ INSERT INTO `follow_company` (`company_id`, `user_id`) VALUES
 (2, 5);
 
 -- Chèn dữ liệu mẫu vào bảng applypost
-INSERT INTO `applypost` (`created_at`, `recruitment_id`, `user_id`, `name_cv`, `status`, `text`,`image`) VALUES 
-('2024-06-06', 1, 4, 'cv1.pdf', 1, 'Application text 1','image_1.jpg'), 
-('2024-06-07', 2, 3, 'cv2.pdf', 1, 'Application text 2','image_2.jpg'), 
-('2024-06-08', 3, 2, 'cv3.pdf', 1, 'Application text 3','image_3.jpg'), 
-('2024-06-09', 4, 1, 'cv4.pdf', 1, 'Application text 4','image_4.jpg'), 
-('2024-06-10', 3, 5, 'cv5.pdf', 1, 'Application text 5','image_5.jpg');
+INSERT INTO `applypost` (`created_at`, `recruitment_id`, `user_id`, `status`, `text`) VALUES 
+('2024-06-06', 1, 4, 1, 'Application text 1'), 
+('2024-06-07', 2, 3, 1, 'Application text 2'), 
+('2024-06-08', 3, 2, 1, 'Application text 3'), 
+('2024-06-09', 4, 1, 1, 'Application text 4'), 
+('2024-06-10', 3, 5, 1, 'Application text 5');

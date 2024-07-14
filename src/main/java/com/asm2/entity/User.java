@@ -63,20 +63,12 @@ public class User {
 							CascadeType.PERSIST, CascadeType.REFRESH})
 	@JoinColumn(name="user_id")
 	private List<Company> companies;
-	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinTable(name = "save_job",
-				joinColumns = @JoinColumn(name="user_id"),
-				inverseJoinColumns = @JoinColumn(name="recruitment_id"))	
-	private List<Recruitment> recruitmentsSave;
-	@ManyToMany(fetch = FetchType.LAZY,
-				cascade = {CascadeType.DETACH, CascadeType.MERGE,
-							CascadeType.PERSIST, CascadeType.REFRESH})
-	@JoinTable(name="follow_company",
-				joinColumns = @JoinColumn(name="user_id"),
-				inverseJoinColumns = @JoinColumn(name="company_id"))
-	private List<Company> followCompanies;
+	@OneToMany(mappedBy = "user")
+	private List<FollowCompany> followCompanies;
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
 	private List<ApplyPost> applyPosts;
+	@OneToMany(mappedBy = "user")
+	private List<SaveJob> saveJobs;
 	
 	public User() {
 		this.status=0;
@@ -104,6 +96,10 @@ public class User {
 	public String getEmail() {
 		return email;
 	}
+	public Integer getStatus() {
+		return status;
+	}
+
 	public void setEmail(String email) {
 		this.email = email;
 	}
@@ -131,12 +127,6 @@ public class User {
 	public void setPhoneNumber(String phoneNumber) {
 		this.phoneNumber = phoneNumber;
 	}
-	public int getStatus() {
-		return status;
-	}
-	public void setStatus(int status) {
-		this.status = status;
-	}
 	public boolean getIsActive() {
 		return isActive;
 	}
@@ -155,9 +145,18 @@ public class User {
 	public void setRoles(List<Role> roles) {
 		this.roles = roles;
 	}
+	public List<SaveJob> getSaveJobs() {
+		return saveJobs;
+	}
+
+	public void setSaveJobs(List<SaveJob> saveJobs) {
+		this.saveJobs = saveJobs;
+	}
+
 	public void setActive(boolean isActive) {
 		this.isActive = isActive;
 	}
+
 	public void addRole(Role role) {
 		if(roles == null) {
 			roles = new ArrayList<>();
@@ -170,32 +169,16 @@ public class User {
 	public void setCompanies(List<Company> companies) {
 		this.companies = companies;
 	}
-	public List<Recruitment> getRecruitments() {
-		return recruitmentsSave;
-	}
-	public void setRecruitments(List<Recruitment> recruitments) {
-		this.recruitmentsSave = recruitments;
-	}
 
-	public List<Company> getFollowCompanies() {
+
+
+	public List<FollowCompany> getFollowCompanies() {
 		return followCompanies;
 	}
 
-
-	public void setFollowCompanies(List<Company> followCompanies) {
+	public void setFollowCompanies(List<FollowCompany> followCompanies) {
 		this.followCompanies = followCompanies;
 	}
-
-
-	public List<Recruitment> getRecruitmentsSave() {
-		return recruitmentsSave;
-	}
-
-
-	public void setRecruitmentsSave(List<Recruitment> recruitmentsSave) {
-		this.recruitmentsSave = recruitmentsSave;
-	}
-
 
 	public List<ApplyPost> getApplyPosts() {
 		return applyPosts;
@@ -227,13 +210,6 @@ public class User {
 		this.cv = cv;
 	}
 
-	public void addRecruitmentSave(Recruitment recruitment) {
-		if(recruitmentsSave == null) {
-			recruitmentsSave = new ArrayList<Recruitment>();
-		}
-		recruitmentsSave.add(recruitment);
-	}
-
 	public void addCompany(Company company) {
 		if(companies == null) {
 			companies = new ArrayList<>();
@@ -241,11 +217,11 @@ public class User {
 		companies.add(company);
 	}
 	
-	public void addFollowCompany(Company company) {
+	public void addFollowCompany(FollowCompany followCompany) {
 		if(followCompanies == null) {
-			followCompanies = new ArrayList<Company>();
+			followCompanies = new ArrayList<FollowCompany>();
 		}
-		followCompanies.add(company);
+		followCompanies.add(followCompany);
 	}
 	public void addApplyPost(ApplyPost applyPost) {
 		if(applyPosts == null) {
@@ -253,7 +229,12 @@ public class User {
 		}
 		applyPosts.add(applyPost);
 	}
-
+	public void addSaveJob(SaveJob saveJob) {
+		if(saveJobs == null) {
+			saveJobs = new ArrayList<SaveJob>();
+		}
+		saveJobs.add(saveJob);
+	}
 	public User(String address, String description, String email, String userName, String image, String password,
 			String phoneNumber, int status, boolean isActive, Cv sv, List<Role> roles) {
 		super();

@@ -1,7 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-    <%@ taglib uri="http://java.sun.com/jstl/core_rt" prefix="c" %>
-    <%@ taglib uri="http://www.springframework.org/tags/form" prefix="f" %>
+ <%@ taglib uri="http://java.sun.com/jstl/core_rt" prefix="c"%>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="f"%>
+<%@ taglib uri="http://www.springframework.org/security/tags" prefix="s"%>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -53,44 +54,70 @@
 </head>
 <body>
 <body>
-<nav class="header_menu" class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
-    <div class="container-fluid px-md-4	">
-        <a class="navbar-brand" href="${pageContext.request.contextPath}/">Work CV</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="oi oi-menu"></span> Menu
-        </button>
-    
-        <div class="collapse navbar-collapse" id="ftco-nav">
-          <ul class="navbar-nav ml-auto">
-            <li class="nav-item active"><a href="${pageContext.request.contextPath}/" class="nav-link">Trang chủ</a></li>
-            <li class="'nav-item"><a href="/" class="nav-link">Công việc</a></li>
-            <li class="nav-item"><a href="/" class="nav-link">Ứng cử viên</a></li>
-    <!--        <li class="nav-item"><a href="blog.html" class="nav-link">Công ty</a></li>-->
-    <!-- 
-            <li th:if="${session.user}" class="nav-item"><a th:href="@{'/user/profile/'+${session.user.id}}" th:text="${session.user.fullName}" class="nav-link" ></a> -->
-    
-              <ul class="dropdown">
-                <li><a href="/">Hồ Sơ</a></li>
-    <!--            <li><a href="service-single.html">Đổi mật khẩu</a></li>-->
-                <li ><a href="/save-job/get-list" >Công việc đã lưu</a></li>
-                <li ><a href="/user/list-post" >Danh sách bài đăng</a></li>
-                <li ><a href="/user/get-list-apply" >Công việc đã ứng tuyển</a></li>
-                <li ><a href="/user/get-list-company" >Công ty đã theo dõi</a></li>
-    <!--            <li th:if="${session.user.role.id == 2}"><a href="/auth/logout" >Ứng cử viên tiềm năng</a></li>-->
-                <li><a href="/auth/logout" >Đăng xuất</a></li>
-    
-              </ul>
-            </li>
-    
-              <li></li>
-    
-              <li class="nav-item cta mr-md-1"><a href="/recruitment/post" class="nav-link">Đăng tuyển</a></li>
-            <li class="nav-item cta cta-colored"><a href="/auth/login" class="nav-link">Đăng nhập</a></li>
-    
-          </ul>
-        </div>
-      </div>
-</nav>
+<nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light"
+		id="ftco-navbar">
+		<div class="container-fluid px-md-4">
+			<a class="navbar-brand" href="${pageContext.request.contextPath}/">Work
+				CV</a>
+			<div class="collapse navbar-collapse" id="ftco-nav">
+				<ul class="navbar-nav ml-auto">
+					<li class="nav-item active"><a
+						href="${pageContext.request.contextPath}/" class="nav-link">Trang
+							chủ</a></li>
+				<!-- 	<li class="nav-item"><a href="${pageContext.request.contextPath}/listJob" class="nav-link">Công
+							việc</a></li> -->
+					
+					<s:authorize access="hasRole('candidate')">
+					<li class="nav-item" style="position: relative;"><a class="nav-link" href="#"> Hồ Sơ
+						</a>
+							<ul class="dropdown" >
+								<li><a href="${pageContext.request.contextPath}/showProfile?username=${pageContext.request.userPrincipal.name}">Hồ sơ</a></li>
+								<li><a href="${pageContext.request.contextPath}/user/getListSaveJob?username=${pageContext.request.userPrincipal.name}">Công việc đã lưu</a></li>
+								<li><a href="${pageContext.request.contextPath}/user/getListApply?username=${pageContext.request.userPrincipal.name}">Công việc đã ứng
+										tuyển</a></li>
+								<li><a href="${pageContext.request.contextPath}/user/getListCompany?username=${pageContext.request.userPrincipal.name}">Công ty đã theo
+										dõi</a></li>
+							</ul></li>
+					</s:authorize>
+					<s:authorize access="hasRole('recruiter')">
+					<li class="nav-item"><a href="${pageContext.request.contextPath }/listApplyPost?username=${pageContext.request.userPrincipal.name}" class="nav-link">Ứng cử
+							viên</a></li>
+						<li class="nav-item">
+							<a class="nav-link" href="#"> <s:authentication
+									property="principal.username" />
+						</a>
+						<ul class="dropdown">
+							<li>
+								<a href="${pageContext.request.contextPath }/showProfile?username=${pageContext.request.userPrincipal.name }"
+									>Hồ Sơ</a>
+							</li>
+							<li>
+								<a href="${pageContext.request.contextPath}/user/showListPost?username=${pageContext.request.userPrincipal.name }">Danh sách
+									bài đăng</a> 
+									
+							</li>
+								<li><a href="${pageContext.request.contextPath }/logout">Đăng
+										xuất</a> </li>
+							</ul>
+						</li>
+						<li class="nav-item "><a href="${pageContext.request.contextPath }/recruitment/post?username=${pageContext.request.userPrincipal.name}" class="nav-link">Đăng
+								tuyển</a></li>
+					</s:authorize>
+					<s:authorize access="isAnonymous()">
+						<li class="nav-item cta cta-colored"><a
+							href="${pageContext.request.contextPath }/showLoginPage"
+							class="nav-link"> Đăng nhập</a></li>
+					</s:authorize>
+					<s:authorize access="isAuthenticated()">
+						<li class="nav-item">
+							<a class="nav-link" href="${pageContext.request.contextPath }/logout">
+								Đăng xuất</a>
+						</li>
+					</s:authorize>
+				</ul>
+			</div>
+		</div>
+	</nav>
 <div class="hero-wrap hero-wrap-2" style="background-image: url('user/assets/images/bg_1.jpg');" data-stellar-background-ratio="0.5">
   <div class="overlay"></div>
   <div class="container">
@@ -207,7 +234,7 @@
 		</c:if>
           <div class="row form-group">
             <div class="col-md-12 mb-3 mb-md-0">
-              <label class="text-black" for="fname">Email</label>
+              <label class="text-black" for="fname">Username</label>
               <input type="text" id="fname" name="username" class="form-control" placeholder="Email" required>
             </div>
           </div>

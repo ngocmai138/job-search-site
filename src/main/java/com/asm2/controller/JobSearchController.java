@@ -48,21 +48,12 @@ public class JobSearchController {
 		return "home";
 	}
 
-	@GetMapping("/admin")
-	public String adminPage() {
-		return "admin-page";
-	}
 
 	@GetMapping("/showLoginPage")
 	public String showLoginPage(Model model) {
 		List<Role> roles = jobService.getRoles();
 		model.addAttribute("roles", roles);
 		return "login-page";
-	}
-
-	@GetMapping("/access-denied")
-	public String deniedPage() {
-		return "access-denied";
 	}
 
 	@PostMapping("/register")
@@ -73,6 +64,8 @@ public class JobSearchController {
 		try {
 			Role role = jobService.getRole(roleId);
 			user.addRole(role);
+			user.setPassword("{noop}"+user.getPassword());
+			if(role.getRoleName().equals("ROLE_candidate")) user.setStatus(1);
 			jobService.addOrUpdateUser(user);
 			redirectAttributes.addFlashAttribute("msg_register_success", "success");
 			return "redirect:" + referer;
@@ -111,5 +104,9 @@ public class JobSearchController {
 		model.addAttribute("pageNumber",pageNumber);
 		model.addAttribute("pageSize",pageSize);
 		return "list-user";
+	}
+	@RequestMapping("/listJob")
+	public String listJob() {
+		return "listJob";
 	}
 }
